@@ -6,10 +6,6 @@ __all__ = ['raw_to_datastack', 'tree', 'underscorify', 'append', 'repack', 'max_
 
 # Cell
 
-#%%writefile /home/frank/Work/Projecten/DoRe/code/maxrf4u/storage.py
-
-# See development notebook: ~/Work/Projecten/DoRe/notebooks/2021-03-05-maxrf4u-dev.ipynb
-
 import maxrf4u
 
 import numpy as np
