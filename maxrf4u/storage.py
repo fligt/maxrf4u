@@ -89,8 +89,6 @@ def raw_to_datastack(raw_file, rpl_file, datastack_file=None, datapath=MAXRF_CUB
 
     # compute sum and max spectra and append to zipstore
 
-    print('Computing max and sum spectra...')
-
     y_max, y_sum = max_and_sum_spectra(datastack_file, datapath=MAXRF_CUBE)
 
     append(y_max, MAXRF_MAXSPECTRUM, datastack_file)
