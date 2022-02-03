@@ -2,7 +2,8 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {"raw_to_datastack": "10_storage.ipynb",
+index = {"Layers": "10_storage.ipynb",
+         "raw_to_datastack": "10_storage.ipynb",
          "tree": "10_storage.ipynb",
          "underscorify": "10_storage.ipynb",
          "append": "10_storage.ipynb",
@@ -10,22 +11,13 @@ index = {"raw_to_datastack": "10_storage.ipynb",
          "max_and_sum_spectra": "10_storage.ipynb",
          "DataStack": "10_storage.ipynb",
          "DATASTACK_EXT": "10_storage.ipynb",
-         "MAXRF_CUBE": "10_storage.ipynb",
-         "MAXRF_MAXSPECTRUM": "10_storage.ipynb",
-         "MAXRF_SUMSPECTRUM": "10_storage.ipynb",
-         "MAXRF_ENERGIES": "10_storage.ipynb",
-         "HOTMAX_SPECTRA": "10_storage.ipynb",
-         "HOTMAX_PIXELS": "10_storage.ipynb",
-         "HOTMAX_INTENSITIES": "10_storage.ipynb",
-         "MAPS_IMVIS": "10_storage.ipynb",
+         "L": "10_storage.ipynb",
          "calibrate": "20_calibration.ipynb",
          "detector_angle": "20_calibration.ipynb",
          "RHODIUM_Ka": "20_calibration.ipynb",
          "IRON_Ka": "20_calibration.ipynb",
-         "get_hotmax": "30_hotmax.ipynb",
-         "get_baseline": "30_hotmax.ipynb",
-         "get_noiseline": "30_hotmax.ipynb",
-         "get_envelopes": "30_hotmax.ipynb"}
+         "get_hotmax_spectra": "30_hotmax.ipynb",
+         "get_hotmax_basenoise": "30_hotmax.ipynb"}
 
 modules = ["storage.py",
            "calibration.py",
