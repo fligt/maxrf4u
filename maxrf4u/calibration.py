@@ -32,11 +32,8 @@ def calibrate(datastack_file, anode='Rh', prominence=0.1):
 
     ds = maxrf4u.DataStack(datastack_file)
 
-    y_max = ds.read_maxspectrum()
-    y_sum = ds.read_sumspectrum()
-
-    #RHODIUM_Ka = 20.210105052526263 # Rh_KL3
-    #IRON_Ka = 6.4032016008004 # Fe_KL3
+    y_max = ds.read(ds.MAXRF_MAXSPECTRUM)
+    y_sum = ds.read(ds.MAXRF_SUMSPECTRUM)
 
     # find sensor and anode peaks in sum spectrum
     n_channels = len(y_sum)
@@ -144,7 +141,7 @@ def calibrate(datastack_file, anode='Rh', prominence=0.1):
 
     if write == 'y':
         print(f'\nWriting channel energies (keV) to: {datastack_file}')
-        maxrf4u.append(x_keVs, maxrf4u.MAXRF_ENERGIES, ds.datastack_file)
+        maxrf4u.append(x_keVs, ds.MAXRF_ENERGIES, ds.datastack_file)
 
     return x_keVs
 
