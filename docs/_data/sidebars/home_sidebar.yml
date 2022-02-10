@@ -16,7 +16,7 @@ entries:
       title: 'Calibration  '
       url: calibration.html
     - output: web,pdf
-      title: Hotmax spectra
+      title: 'Hotmax spectra '
       url: hotmax.html
     output: web
     title: maxrf4u
