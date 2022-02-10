@@ -21,11 +21,11 @@ IRON_Ka = 6.4032016008004 # Fe_KL3
 def calibrate(datastack_file, anode='Rh', prominence=0.1):
     '''Automatic two step energy energy calibration.
 
-    1) In step 1 a preliminary calibration is done assuming that the
+    In step 1 a preliminary calibration is done assuming that the
     sensor peak is located at 0 keV and the Rhodium anode Ka peak
     is next to it's high and broad Compton scattering peak in the sum spectrum.
 
-    2) This preliminary calibration the enables the identification of Fe_Ka and a
+    This preliminary calibration the enables the identification of Fe_Ka and a
     second precise calibration.'''
 
     assert anode == 'Rh', NotImplementedError('Sorry, need to implement other anode materials!')

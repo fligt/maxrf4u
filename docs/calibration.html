@@ -6,8 +6,8 @@ title: Calibration
 keywords: fastai
 sidebar: home_sidebar
 
-
-
+summary: "Find the Compton peak first "
+description: "Find the Compton peak first "
 nb_path: "notebooks/20_calibration.ipynb"
 ---
 <!--
@@ -63,10 +63,10 @@ nb_path: "notebooks/20_calibration.ipynb"
 
 
 
-<div id="cf1a39c7-a2cd-47df-9ba1-5766a9b71497"></div>
+<div id="cf80479b-2c3d-46c3-9f8c-2e0cb2b36388"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#cf1a39c7-a2cd-47df-9ba1-5766a9b71497');
+var element = $('#cf80479b-2c3d-46c3-9f8c-2e0cb2b36388');
 /* Put everything inside the global mpl namespace */
 /* global mpl */
 window.mpl = {};
@@ -1072,7 +1072,7 @@ Writing channel energies (keV) to: RP-T-1898-A-3689.datastack
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>In further analysis our stored energy calibration can now be accessed using the <a href="/maxrf4u/storage.html#DataStack.read_energies("><code>DataStack.read_energies()</code></a>) method which returns an array with 4096 energy values.</p>
+<p>In further analysis our stored energy calibration can now be accessed using the <code>.read('maxrf_energies')</code> method which returns an array with 4096 energy values.</p>
 
 </div>
 </div>
@@ -1116,7 +1116,14 @@ Number of energy channels: 4096
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Module-maxrf4u.calibration.py">Module <code>maxrf4u.calibration.py</code><a class="anchor-link" href="#Module-maxrf4u.calibration.py"> </a></h1>
+<p>Now that we have an energy calibration, we can move to the next step in our data analysis.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Module-maxrf4u.calibration.py">Module <code>maxrf4u.calibration.py</code><a class="anchor-link" href="#Module-maxrf4u.calibration.py"> </a></h2>
 </div>
 </div>
 </div>
@@ -1133,12 +1140,15 @@ Number of energy channels: 4096
 <div class="output_markdown rendered_html output_subarea ">
 <h4 id="calibrate" class="doc_header"><code>calibrate</code><a href="https://github.com/fligt/maxrf4u/tree/main/maxrf4u/calibration.py#L21" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>calibrate</code>(<strong><code>datastack_file</code></strong>, <strong><code>anode</code></strong>=<em><code>'Rh'</code></em>, <strong><code>prominence</code></strong>=<em><code>0.1</code></em>)</p>
 </blockquote>
-<p>Automatic two step energy energy calibration.</p>
-<p>1) In step 1 a preliminary calibration is done assuming that the
+
+<pre><code>Automatic two step energy energy calibration.
+
+In step 1 a preliminary calibration is done assuming that the
 sensor peak is located at 0 keV and the Rhodium anode Ka peak
-is next to it's high and broad Compton scattering peak in the sum spectrum.</p>
-<p>2) This preliminary calibration the enables the identification of Fe_Ka and a
-second precise calibration.</p>
+is next to it's high and broad Compton scattering peak in the sum spectrum.
+
+This preliminary calibration the enables the identification of Fe_Ka and a
+second precise calibration.</code></pre>
 
 </div>
 
@@ -1163,8 +1173,10 @@ second precise calibration.</p>
 <div class="output_markdown rendered_html output_subarea ">
 <h4 id="detector_angle" class="doc_header"><code>detector_angle</code><a href="https://github.com/fligt/maxrf4u/tree/main/maxrf4u/calibration.py#L149" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>detector_angle</code>(<strong><code>keV0</code></strong>, <strong><code>keV1</code></strong>)</p>
 </blockquote>
-<p>Calculate detector angle <em>theta</em> (degrees)</p>
-<p>from Compton peak energy <em>keV0</em> and anode energy <em>keV1</em> and .</p>
+
+<pre><code>Calculate detector angle *theta* (degrees)
+
+from Compton peak energy *keV0* and anode energy *keV1* and .</code></pre>
 
 </div>
 

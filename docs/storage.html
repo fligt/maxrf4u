@@ -438,10 +438,10 @@ Computing sum spectrum...
 
 
 
-<div id="92d0f892-cad7-40d8-bdac-81d49216928d"></div>
+<div id="5a2a9aca-1734-43e9-95e4-9f4dd62851d6"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#92d0f892-cad7-40d8-bdac-81d49216928d');
+var element = $('#5a2a9aca-1734-43e9-95e4-9f4dd62851d6');
 /* Put everything inside the global mpl namespace */
 /* global mpl */
 window.mpl = {};
@@ -1478,8 +1478,10 @@ if (IPython.notebook.kernel !== null) {
 <div class="output_markdown rendered_html output_subarea ">
 <h4 id="raw_to_datastack" class="doc_header"><code>raw_to_datastack</code><a href="https://github.com/fligt/maxrf4u/tree/main/maxrf4u/storage.py#L55" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>raw_to_datastack</code>(<strong><code>raw_file</code></strong>, <strong><code>rpl_file</code></strong>, <strong><code>datastack_file</code></strong>=<em><code>None</code></em>, <strong><code>datapath</code></strong>=<em><code>'maxrf_cube'</code></em>, <strong><code>verbose</code></strong>=<em><code>True</code></em>)</p>
 </blockquote>
-<p>Convert Bruker Macro XRF (.raw) data file <em>raw_filename</em> and (.rpl) shape file <em>rpl_filename</em>.</p>
-<p>into a Zarr Zipstore datastack file (.datastack).</p>
+
+<pre><code>Convert Bruker Macro XRF (.raw) data file *raw_filename* and (.rpl) shape file *rpl_filename*.
+
+into a Zarr Zipstore datastack file (.datastack).</code></pre>
 
 </div>
 
@@ -1504,7 +1506,8 @@ if (IPython.notebook.kernel !== null) {
 <div class="output_markdown rendered_html output_subarea ">
 <h4 id="tree" class="doc_header"><code>tree</code><a href="https://github.com/fligt/maxrf4u/tree/main/maxrf4u/storage.py#L108" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>tree</code>(<strong><code>datastack_file</code></strong>, <strong><code>show_arrays</code></strong>=<em><code>False</code></em>)</p>
 </blockquote>
-<p>Prints content tree of <em>datastack_file</em></p>
+
+<pre><code>Prints content tree of *datastack_file*</code></pre>
 
 </div>
 
@@ -1529,8 +1532,10 @@ if (IPython.notebook.kernel !== null) {
 <div class="output_markdown rendered_html output_subarea ">
 <h4 id="underscorify" class="doc_header"><code>underscorify</code><a href="https://github.com/fligt/maxrf4u/tree/main/maxrf4u/storage.py#L127" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>underscorify</code>(<strong><code>datapath</code></strong>, <strong><code>datapath_list</code></strong>, <strong><code>extra_underscore</code></strong>=<em><code>True</code></em>)</p>
 </blockquote>
-<p>Append extra underscore if <em>datapath</em> exists to prevent overwriting.</p>
-<p>If <em>extra_underscore=False</em> return (latest) datapath with most underscores</p>
+
+<pre><code>Append extra underscore if *datapath* exists to prevent overwriting.
+
+If *extra_underscore=False* return (latest) datapath with most underscores</code></pre>
 
 </div>
 
@@ -1555,7 +1560,8 @@ if (IPython.notebook.kernel !== null) {
 <div class="output_markdown rendered_html output_subarea ">
 <h4 id="append" class="doc_header"><code>append</code><a href="https://github.com/fligt/maxrf4u/tree/main/maxrf4u/storage.py#L142" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>append</code>(<strong><code>arr</code></strong>, <strong><code>datapath</code></strong>, <strong><code>datastack_file</code></strong>)</p>
 </blockquote>
-<p>Add numpy or dask array <em>arr</em> to <em>datastack_file</em> in folder <em>datapath</em>.</p>
+
+<pre><code>Add numpy or dask array *arr* to *datastack_file* in folder *datapath*.</code></pre>
 
 </div>
 
@@ -1580,8 +1586,10 @@ if (IPython.notebook.kernel !== null) {
 <div class="output_markdown rendered_html output_subarea ">
 <h4 id="repack" class="doc_header"><code>repack</code><a href="https://github.com/fligt/maxrf4u/tree/main/maxrf4u/storage.py#L160" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>repack</code>(<strong><code>datastack_file</code></strong>, <strong><code>select</code></strong>=<em><code>'all'</code></em>, <strong><code>overwrite</code></strong>=<em><code>True</code></em>, <strong><code>verbose</code></strong>=<em><code>False</code></em>)</p>
 </blockquote>
-<p>Repack <em>datastack_file</em> by deleting and renaming all but latest datasets.</p>
-<p>Automatic selection of latest datasets can be overriden be providing list of <em>select</em> datasets</p>
+
+<pre><code>Repack *datastack_file* by deleting and renaming all but latest datasets.
+
+Automatic selection of latest datasets can be overriden be providing list of *select* datasets</code></pre>
 
 </div>
 
@@ -1606,8 +1614,10 @@ if (IPython.notebook.kernel !== null) {
 <div class="output_markdown rendered_html output_subarea ">
 <h4 id="max_and_sum_spectra" class="doc_header"><code>max_and_sum_spectra</code><a href="https://github.com/fligt/maxrf4u/tree/main/maxrf4u/storage.py#L206" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>max_and_sum_spectra</code>(<strong><code>datastack_file</code></strong>, <strong><code>datapath</code></strong>=<em><code>'maxrf_cube'</code></em>)</p>
 </blockquote>
-<p>Compute sum spectrum and max spectrum for 'maxrf' dataset in <em>datastack_file</em>.</p>
-<p>Returns: <em>y_sum</em>, <em>y_max</em></p>
+
+<pre><code>Compute sum spectrum and max spectrum for 'maxrf' dataset in *datastack_file*.
+
+Returns: *y_sum*, *y_max*</code></pre>
 
 </div>
 

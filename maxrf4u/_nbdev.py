@@ -16,8 +16,9 @@ index = {"Layers": "10_storage.ipynb",
          "detector_angle": "20_calibration.ipynb",
          "RHODIUM_Ka": "20_calibration.ipynb",
          "IRON_Ka": "20_calibration.ipynb",
-         "get_hotmax_spectra": "30_hotmax.ipynb",
-         "get_hotmax_basenoise": "30_hotmax.ipynb"}
+         "HotmaxAtlas": "30_hotmax.ipynb",
+         "compute_hotmax_spectra": "30_hotmax.ipynb",
+         "compute_hotmax_noise": "30_hotmax.ipynb"}
 
 modules = ["storage.py",
            "calibration.py",

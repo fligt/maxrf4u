@@ -302,7 +302,7 @@ class DataStack:
             dataset = None
 
             self.tree()
-            print(f'Dataset not found: {datapath}')
+            assert False, f'Dataset not found: {datapath}'
 
         return dataset
 
