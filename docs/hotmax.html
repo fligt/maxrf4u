@@ -6,8 +6,8 @@ title: Hotmax spectra
 keywords: fastai
 sidebar: home_sidebar
 
-summary: "Where are the best spectra to be found?"
-description: "Where are the best spectra to be found?"
+summary: "Cherry picking the best spectra"
+description: "Cherry picking the best spectra"
 nb_path: "notebooks/30_hotmax.ipynb"
 ---
 <!--
@@ -31,7 +31,7 @@ nb_path: "notebooks/30_hotmax.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>A MA-XRF spectral image data cube contains typically a million spectra or so. Far too many to analyze them individually! Furthermore, most of these spectra have low signals and are rather noisy. A common approach to overcome computational problems is to base a further data analysis solely on the max spectrum. Such an approach is used e.g. by <em>DataMunger</em> (Mathias Alfeld <strong>need link here</strong>). As discussed above, the max spectrum essentially is an envelope that provides a highly informative summary of all spectra. It is important to understand that different peaks in the max spectrum envelope can originate from different pixel positions in the spectral image. This complicates attribution of the peaks directly from the max spectrum.</p>
+<p>A MA-XRF spectral image data cube contains typically a million spectra or so. Far too many to analyze them individually! Furthermore, most of these spectra have low signals and are rather noisy. A common approach to overcome computational problems is to base a further data analysis solely on the max spectrum. Such an approach is used e.g. by <a href="https://sourceforge.net/p/datamuncher/wiki/Home/">DataMuncher</a> developed by Mathias Alfeld. As discussed above, the max spectrum essentially is an envelope that provides a highly informative summary of all spectra. It is important to understand that different peaks in the max spectrum envelope can originate from different pixel positions in the spectral image. This complicates attribution of the peaks directly from the max spectrum.</p>
 
 </div>
 </div>
@@ -74,10 +74,10 @@ nb_path: "notebooks/30_hotmax.ipynb"
 
 
 
-<div id="4e578218-7094-471a-8528-b4055bb45b60"></div>
+<div id="ee826308-4422-4edb-93a4-093fd027fdb2"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#4e578218-7094-471a-8528-b4055bb45b60');
+var element = $('#ee826308-4422-4edb-93a4-093fd027fdb2');
 /* Put everything inside the global mpl namespace */
 /* global mpl */
 window.mpl = {};
@@ -1069,12 +1069,10 @@ if (IPython.notebook.kernel !== null) {
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Step 1/3: Reading hot max channel maps...
-[########################################] | 100% Completed | 48.6s
+[########################################] | 100% Completed | 52.0s
 Step 2/3: Locating hot max pixels...
 Step 3/3: Ready with reading hot max spectra. 
-Write hotmax spectra and pixels to datastack file [y/n]? y
-
-Saved hotmax data to: RP-T-1898-A-3689.datastack
+Write hotmax spectra and pixels to datastack file [y/n]? n
 </pre>
 </div>
 </div>
@@ -1141,7 +1139,7 @@ Each spectrum contains 4096 intensity values.
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Now let's pick one of the 24 hotmax spectra and take a closer look. Each hotmax spectrum has one peak (square red marker) that corresponds to the max spectrum envelope.</p>
+<p>Now let's pick one of the 24 hotmax spectra and take a closer look. Each hotmax spectrum has one peak (square red marker) that corresponds to a specific peak in the the max spectrum envelope.</p>
 
 </div>
 </div>
@@ -1158,10 +1156,10 @@ Each spectrum contains 4096 intensity values.
 
 
 
-<div id="bcc1bd48-7a11-40cd-a543-84d21ca421bf"></div>
+<div id="a332dca8-585b-42a8-9136-77411837774c"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#bcc1bd48-7a11-40cd-a543-84d21ca421bf');
+var element = $('#a332dca8-585b-42a8-9136-77411837774c');
 /* Put everything inside the global mpl namespace */
 /* global mpl */
 window.mpl = {};
@@ -2171,7 +2169,7 @@ if (IPython.notebook.kernel !== null) {
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">maxrf4u</span> <span class="kn">import</span> <span class="n">compute_hotmax_noise</span><span class="p">,</span> <span class="n">HotmaxAtlas</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">maxrf4u</span> <span class="kn">import</span> <span class="n">compute_hotmax_noise</span>
 
 <span class="n">compute_hotmax_noise</span><span class="p">(</span><span class="s1">&#39;RP-T-1898-A-3689.datastack&#39;</span><span class="p">)</span>
 </pre></div>
@@ -2188,9 +2186,7 @@ if (IPython.notebook.kernel !== null) {
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Ready computing 24 noise envelopes.                           
 
-Write hotmax baselines and noiselines to datastack file [y/n]? y
-
-Saved hotmax noise data to: RP-T-1898-A-3689.datastack
+Write hotmax baselines and noiselines to datastack file [y/n]? n
 </pre>
 </div>
 </div>
@@ -2203,7 +2199,7 @@ Saved hotmax noise data to: RP-T-1898-A-3689.datastack
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We can create a <a href="/maxrf4u/hotmax.html#HotmaxAtlas"><code>HotmaxAtlas</code></a> object to plot all spectra with the <a href="/maxrf4u/hotmax.html#HotmaxAtlas.plot_spectra("><code>HotmaxAtlas.plot_spectra()</code></a>) method. Or we can plot a single spectrum with <a href="/maxrf4u/hotmax.html#HotmaxAtlas.plot_spectrum(&lt;nr&gt;"><code>HotmaxAtlas.plot_spectrum(&lt;nr&gt;)</code></a>) and start to explain what we seeaccess the hotmax spectra.</p>
+<p>We can create a <a href="/maxrf4u/hotmax.html#HotmaxAtlas"><code>HotmaxAtlas</code></a> object to plot all spectra with the <a href="/maxrf4u/hotmax.html#HotmaxAtlas.plot_spectra("><code>HotmaxAtlas.plot_spectra()</code></a>) method.</p>
 
 </div>
 </div>
@@ -2215,7 +2211,9 @@ Saved hotmax noise data to: RP-T-1898-A-3689.datastack
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">hma</span> <span class="o">=</span> <span class="n">HotmaxAtlas</span><span class="p">(</span><span class="s1">&#39;RP-T-1898-A-3689.datastack&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">maxrf4u</span> <span class="kn">import</span> <span class="n">HotmaxAtlas</span> 
+
+<span class="n">hma</span> <span class="o">=</span> <span class="n">HotmaxAtlas</span><span class="p">(</span><span class="s1">&#39;RP-T-1898-A-3689.datastack&#39;</span><span class="p">)</span>
 
 <span class="n">hma</span><span class="o">.</span><span class="n">plot_spectra</span><span class="p">()</span>
 </pre></div>
@@ -2232,10 +2230,10 @@ Saved hotmax noise data to: RP-T-1898-A-3689.datastack
 
 
 
-<div id="b079c0f6-8929-4917-b722-3786af816263"></div>
+<div id="3bfda529-dd40-4523-916a-e2caa07b2b54"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#b079c0f6-8929-4917-b722-3786af816263');
+var element = $('#3bfda529-dd40-4523-916a-e2caa07b2b54');
 /* Put everything inside the global mpl namespace */
 /* global mpl */
 window.mpl = {};
@@ -3229,6 +3227,13 @@ if (IPython.notebook.kernel !== null) {
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Or we can plot a single spectrum with <a href="/maxrf4u/hotmax.html#HotmaxAtlas.plot_spectrum(&lt;nr&gt;"><code>HotmaxAtlas.plot_spectrum(&lt;nr&gt;)</code></a>) to inspect a specific hotmax spectrum.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -3251,10 +3256,10 @@ if (IPython.notebook.kernel !== null) {
 
 
 
-<div id="26a49445-0262-48fa-ae7c-b03b668ddfa4"></div>
+<div id="26d92fc1-b087-48c8-b310-fb3acef59ab0"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#26a49445-0262-48fa-ae7c-b03b668ddfa4');
+var element = $('#26d92fc1-b087-48c8-b310-fb3acef59ab0');
 /* Put everything inside the global mpl namespace */
 /* global mpl */
 window.mpl = {};
@@ -4297,7 +4302,7 @@ if (IPython.notebook.kernel !== null) {
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="compute_hotmax_spectra" class="doc_header"><code>compute_hotmax_spectra</code><a href="https://github.com/fligt/maxrf4u/tree/main/maxrf4u/hotmax.py#L141" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>compute_hotmax_spectra</code>(<strong><code>datastack_file</code></strong>, <strong><code>prominence</code></strong>=<em><code>0.35</code></em>)</p>
+<h4 id="compute_hotmax_spectra" class="doc_header"><code>compute_hotmax_spectra</code><a href="https://github.com/fligt/maxrf4u/tree/main/maxrf4u/hotmax.py#L160" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>compute_hotmax_spectra</code>(<strong><code>datastack_file</code></strong>, <strong><code>prominence</code></strong>=<em><code>0.35</code></em>)</p>
 </blockquote>
 
 <pre><code>Collect hotmax pixels and corresponding spectra from *datastack_file*.
@@ -4325,7 +4330,7 @@ Ask user confirmation for saving result to datastack file.</code></pre>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="compute_hotmax_noise" class="doc_header"><code>compute_hotmax_noise</code><a href="https://github.com/fligt/maxrf4u/tree/main/maxrf4u/hotmax.py#L291" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>compute_hotmax_noise</code>(<strong><code>datastack_file</code></strong>, <strong><code>radius</code></strong>=<em><code>200</code></em>, <strong><code>alpha</code></strong>=<em><code>0.6</code></em>, <strong><code>beta</code></strong>=<em><code>0.1</code></em>)</p>
+<h4 id="compute_hotmax_noise" class="doc_header"><code>compute_hotmax_noise</code><a href="https://github.com/fligt/maxrf4u/tree/main/maxrf4u/hotmax.py#L310" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>compute_hotmax_noise</code>(<strong><code>datastack_file</code></strong>, <strong><code>radius</code></strong>=<em><code>200</code></em>, <strong><code>alpha</code></strong>=<em><code>0.6</code></em>, <strong><code>beta</code></strong>=<em><code>0.1</code></em>)</p>
 </blockquote>
 
 <pre><code>Utility function to get baselines and noiselines from hotmax spectra in *datastack_file*.
