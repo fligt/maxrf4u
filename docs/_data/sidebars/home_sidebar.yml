@@ -18,6 +18,9 @@ entries:
     - output: web,pdf
       title: 'Hotmax spectra '
       url: hotmax.html
+    - output: web,pdf
+      title: 'The peak pattern puzzle '
+      url: peak-pattern-puzzle.html
     output: web
     title: maxrf4u
   output: web

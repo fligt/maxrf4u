@@ -18,11 +18,17 @@ index = {"Layers": "10_storage.ipynb",
          "IRON_Ka": "20_calibration.ipynb",
          "HotmaxAtlas": "30_hotmax.ipynb",
          "compute_hotmax_spectra": "30_hotmax.ipynb",
-         "compute_hotmax_noise": "30_hotmax.ipynb"}
+         "compute_hotmax_noise": "30_hotmax.ipynb",
+         "get_patterns": "40_peak-pattern-puzzle.ipynb",
+         "colorize": "40_peak-pattern-puzzle.ipynb",
+         "plot_patterns": "40_peak-pattern-puzzle.ipynb",
+         "all_elements": "40_peak-pattern-puzzle.ipynb",
+         "eoi": "40_peak-pattern-puzzle.ipynb"}
 
 modules = ["storage.py",
            "calibration.py",
-           "hotmax.py"]
+           "hotmax.py",
+           "peakpuzzle.py"]
 
 doc_url = "https://fligt.github.io/maxrf4u/"
 
