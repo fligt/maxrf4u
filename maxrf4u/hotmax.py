@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 from dask.diagnostics import ProgressBar
 import scipy.ndimage.morphology as morph
 import scipy.interpolate as sip
+from IPython.display import SVG
 
 class HotmaxAtlas():
 
@@ -134,7 +135,10 @@ class HotmaxAtlas():
         return ann_list
 
 
-    def plot_spectra(self):
+    def plot_spectra(self, svg=True):
+
+        if svg:
+            plt.ioff()
 
         fig, axs = plt.subplots(nrows=self.n_spectra, figsize=[9, self.n_spectra], sharex=True)
 
@@ -153,8 +157,14 @@ class HotmaxAtlas():
 
         ax.set_xlabel('Energy [keV]')
 
-
+        plt.tight_layout()
         plt.subplots_adjust(hspace=0.1)
+
+        if svg:
+            plt.savefig('plot.svg')
+            fig.clear()
+            plt.ion()
+            return SVG('plot.svg')
 
 
 def compute_hotmax_spectra(datastack_file, prominence=0.35):
