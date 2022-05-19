@@ -64,7 +64,7 @@ class HotmaxAtlas():
         self.all_peaks_set = np.sort(list(set(self.all_peaks)))
 
 
-    def plot_spectrum(self, n, ax=None, legend=False, headspace=1):
+    def plot_spectrum(self, n, ax=None, legend=False, headspace=1, footspace=0.1):
 
         if ax is None:
 
@@ -110,18 +110,26 @@ class HotmaxAtlas():
             ann_list.append(ann)
 
 
-        # limits
-        ylim = headspace * 1.15 * self.hotmax_spectra[n].max()
-        ax.set_ylim(-1, ylim)
+        # plot limits
+        ymax = 1.15 * self.hotmax_spectra[n].max() # add space for peak lables
+        ymin = -ymax / 5
+        ax.set_ylim(footspace * ymin, headspace * ymax)
         xlim = self.x_keVs[max(self.hotmax_pixels[:, 2])] + 2
         ax.set_xlim(-1, xlim)
 
-        # label
-        ax.text(0.995, 0.98, f'{n}', c='grey', ha='right', va='top', transform=ax.transAxes)
+        # remove negative yticks from footspace
+        yticks = ax.get_yticks()
+        is_positive = yticks >= 0
+        ax.set_yticks(yticks[is_positive])
+        # again why ??
+        ax.set_ylim(footspace * ymin, headspace * ymax)
 
-        # all hotmax peaks
+        # label
+        ax.text(0.995, 0.98, f'#{n}', c='grey', ha='right', va='top', transform=ax.transAxes)
+
+        # plot lines in pattern overview for all hotmax peaks
         lines_x = self.x_keVs[self.hotmax_pixels[:, 2]]
-        ax.vlines(lines_x, ymin=0, ymax=ylim, color='r', alpha=0.2, zorder=9-30)
+        ax.vlines(lines_x, ymin=0, ymax=ymax*headspace, color='r', alpha=0.2, zorder=9-30)
 
 
         # add legend and labels etcetera if standalone
@@ -132,7 +140,7 @@ class HotmaxAtlas():
 
         plt.tight_layout()
 
-        return ann_list
+        return ax, ann_list
 
 
     def plot_spectra(self, svg=True):

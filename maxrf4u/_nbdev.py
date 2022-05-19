@@ -21,7 +21,9 @@ index = {"Layers": "10_storage.ipynb",
          "compute_hotmax_noise": "30_hotmax.ipynb",
          "get_patterns": "40_peak-pattern-puzzle.ipynb",
          "colorize": "40_peak-pattern-puzzle.ipynb",
+         "plot_ptrn": "40_peak-pattern-puzzle.ipynb",
          "plot_patterns": "40_peak-pattern-puzzle.ipynb",
+         "plot_puzzle": "40_peak-pattern-puzzle.ipynb",
          "all_elements": "40_peak-pattern-puzzle.ipynb",
          "eoi": "40_peak-pattern-puzzle.ipynb"}
 
