@@ -4,6 +4,7 @@
     "Storage ": "storage.html",
     "Calibration  ": "calibration.html",
     "Hotmax spectra ": "hotmax.html",
-    "The peak pattern puzzle ": "peak-pattern-puzzle.html"
+    "The peak pattern puzzle ": "peak-pattern-puzzle.html",
+    "Peak slice maps": "peak-slice-maps.html"
   }
 }

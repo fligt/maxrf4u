@@ -27,7 +27,7 @@ all_elements = ['#H', '#He', '#Li', '#Be', '#B', '#C', 'N', 'O', 'F', 'Ne', 'Na'
 eoi = [e for e in all_elements if not '#' in e]
 
 
-def get_patterns(elements, tube_keV=30):
+def get_patterns(elements, tube_keV=30, eoi=None):
     '''Returns sorted pattern dict list, according to alpha peak energy. '''
 
     ptrn_dict_list = []
@@ -44,7 +44,7 @@ def get_patterns(elements, tube_keV=30):
 
         peaks_xy = np.c_[peaks_x, peaks_y]
 
-        color = colorize(elem)
+        color = colorize(elem, eoi=eoi)
 
         name = mendeleev.element(elem).name
 
@@ -60,7 +60,7 @@ def get_patterns(elements, tube_keV=30):
 
     return ptrn_list
 
-def colorize(elem=None, eoi=None):
+def colorize(elem, eoi=None):
     '''Pick fixed color from nice color map for elements of interest. '''
 
     if eoi is None:
@@ -85,22 +85,26 @@ def colorize(elem=None, eoi=None):
     special_colors = {'Pb': (0.4, 0.4, 0.4),
                       'Cu': (0.1, 0.9, 0.3),
                       'Fe': (0.7, 0.5, 0.1),
-                      'S': (1.0, 0.9, 0.1)}
+                      'S': (1.0, 0.9, 0.1),
+                      'Au': (1, 0.9, 0.1),
+                      'Br': (0.4, 0.3, 0)}
 
     for e in special_colors.keys():
         colors[eoi.index(e)] = special_colors[e]
 
-    if elem is not None:
-        assert elem in eoi, f'Element not in: {eoi}'
-        colors = colors[eoi.index(elem)]
+    if elem in eoi:
+            color = colors[eoi.index(elem)]
 
-    return colors
+    else:
+        color = [0, 0, 0]
+
+    return color
 
 
-def plot_ptrn(elem, y, ax):
+def plot_ptrn(elem, y, ax, eoi=None):
     '''Low level plot element pattern at level `y` in axes `ax`.'''
 
-    ptrn = get_patterns([elem])[0]
+    ptrn = get_patterns([elem], eoi=eoi)[0]
 
     peaks_x, peaks_y = ptrn['peaks_xy'].T
     color = ptrn['color']
@@ -125,7 +129,7 @@ def plot_ptrn(elem, y, ax):
     return ptrn
 
 
-def plot_patterns(ptrn_list, ax=None):
+def plot_patterns(ptrn_list, ax=None, eoi=None):
     '''Plot overview of element patterns `ptrn_list` in axes `ax`'''
 
     n_ptrns = len(ptrn_list)
@@ -140,7 +144,7 @@ def plot_patterns(ptrn_list, ax=None):
 
     for i, ptrn in enumerate(ptrn_list):
 
-        plot_ptrn(ptrn['elem'], i, ax)
+        plot_ptrn(ptrn['elem'], i, ax, eoi=eoi)
 
     ax.set_yticks(range(n_ptrns))
     ax.set_yticklabels(element_labels, fontsize=8)

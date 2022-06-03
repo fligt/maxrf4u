@@ -21,6 +21,9 @@ entries:
     - output: web,pdf
       title: 'The peak pattern puzzle '
       url: peak-pattern-puzzle.html
+    - output: web,pdf
+      title: Peak slice maps
+      url: peak-slice-maps.html
     output: web
     title: maxrf4u
   output: web
