@@ -2,7 +2,7 @@ repository: fligt/maxrf4u
 output: web
 topnav_title: maxrf4u
 site_title: maxrf4u
-company_name: This code is published under GPLv3
+company_name: Rijksdienst voor het Cultureel Erfgoed 
 description: A Python package for user friendly visualization of MA-XRF data
 # Set to false to disable KaTeX math
 use_math: true
