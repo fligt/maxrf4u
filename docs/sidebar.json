@@ -1,10 +1,11 @@
 {
   "maxrf4u": {
     "Overview": "/",
+    "Susanna ": "suzanna.html",
     "Storage ": "storage.html",
     "Calibration  ": "calibration.html",
+    "Spatial versus spectral ": "spatial-verus-spectral.html",
     "Hotmax spectra ": "hotmax.html",
-    "The peak pattern puzzle ": "peak-pattern-puzzle.html",
-    "Peak slice maps": "peak-slice-maps.html"
+    "The peak pattern puzzle ": "peak-pattern-puzzle.html"
   }
 }

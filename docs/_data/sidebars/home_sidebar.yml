@@ -10,20 +10,23 @@ entries:
       title: Overview
       url: /
     - output: web,pdf
+      title: 'Susanna '
+      url: suzanna.html
+    - output: web,pdf
       title: 'Storage '
       url: storage.html
     - output: web,pdf
       title: 'Calibration  '
       url: calibration.html
     - output: web,pdf
+      title: 'Spatial versus spectral '
+      url: spatial-verus-spectral.html
+    - output: web,pdf
       title: 'Hotmax spectra '
       url: hotmax.html
     - output: web,pdf
       title: 'The peak pattern puzzle '
       url: peak-pattern-puzzle.html
-    - output: web,pdf
-      title: Peak slice maps
-      url: peak-slice-maps.html
     output: web
     title: maxrf4u
   output: web
