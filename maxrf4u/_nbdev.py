@@ -16,9 +16,6 @@ index = {"Layers": "10_storage.ipynb",
          "detector_angle": "20_calibration.ipynb",
          "RHODIUM_Ka": "20_calibration.ipynb",
          "IRON_Ka": "20_calibration.ipynb",
-         "get_slices": "30_spatial-verus-spectral.ipynb",
-         "get_peakmaps": "30_spatial-verus-spectral.ipynb",
-         "plot_peak_slices": "30_spatial-verus-spectral.ipynb",
          "warp": "30_spatial-verus-spectral.ipynb",
          "HotmaxAtlas": "40_hotmax.ipynb",
          "compute_hotmax_spectra": "40_hotmax.ipynb",
@@ -33,7 +30,7 @@ index = {"Layers": "10_storage.ipynb",
 
 modules = ["storage.py",
            "calibration.py",
-           "peakmaps.py",
+           "warp.py",
            "hotmax.py",
            "peakpuzzle.py"]
 

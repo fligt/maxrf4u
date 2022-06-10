@@ -235,7 +235,7 @@ def compute_hotmax_spectra(datastack_file, prominence=0.35):
     hot_pixels = []
     for k, c_map in enumerate(channel_maps):
         hot_i, hot_j = np.argwhere(c_map == peaks_y[k]).flatten()
-        hot_pixels.append([hot_i, hot_j, peak_indices[k]])
+        hot_pixels.append([hot_i, hot_j, peak_indices[k]]) # xy
 
     hot_pixels = np.array(hot_pixels)
 
