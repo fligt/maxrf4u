@@ -5,5 +5,5 @@ from .calibration import *
 from .warp import * 
 from .hotmax import * 
 from .peakpuzzle import *
-#from .peakslicemaps import * 
+from .peakmaps import * 
 #from .speckles import * 

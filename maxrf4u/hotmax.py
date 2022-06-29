@@ -48,6 +48,9 @@ class HotmaxAtlas():
             peak_order = np.argsort(peak_heights)[::-1] # sort by peak height
             peak_idxs = peak_idxs[peak_order]
 
+            # correct peak positions due to baseline tilting
+            peak_idxs = _untilt(peak_idxs, y_hot, delta=5)
+
             self.peak_idxs_list.append(peak_idxs)
 
             peak_labels = [f'[{i}]' for i in range(len(peak_idxs))]
@@ -360,3 +363,27 @@ def compute_hotmax_noise(datastack_file, radius=200, alpha=0.6, beta=0.1):
         print(f'\nSaved hotmax noise data to: {ds.datastack_file}')
 
     return
+
+
+def _untilt(peak_idxs, y_hot, delta=5):
+    '''Adjust peak index positions to nearest true maxima.'''
+
+    local_maxima = ssg.argrelextrema(y_hot, np.greater)[0]
+
+    new_peak_idxs = []
+
+    for i in peak_idxs:
+
+        if i in list(local_maxima):
+            new_peak_idxs.append(i)
+
+        else:
+            nearest = np.argmin((local_maxima - i)**2)
+            i_new = local_maxima[nearest]
+            new_peak_idxs.append(i_new)
+
+    # check
+    for i in new_peak_idxs:
+        assert i in list(local_maxima), 'Peak adjustment error'
+
+    return new_peak_idxs

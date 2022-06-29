@@ -26,13 +26,21 @@ index = {"Layers": "10_storage.ipynb",
          "plot_patterns": "50_peak-pattern-puzzle.ipynb",
          "plot_puzzle": "50_peak-pattern-puzzle.ipynb",
          "all_elements": "50_peak-pattern-puzzle.ipynb",
-         "eoi": "50_peak-pattern-puzzle.ipynb"}
+         "eoi": "50_peak-pattern-puzzle.ipynb",
+         "gaussian": "60_peakmaps.ipynb",
+         "fit_gaussian": "60_peakmaps.ipynb",
+         "plot_peakslices": "60_peakmaps.ipynb",
+         "get_peakmaps": "60_peakmaps.ipynb",
+         "multi_plot": "60_peakmaps.ipynb",
+         "get_slices": "60_peakmaps.ipynb",
+         "get_hotslices": "60_peakmaps.ipynb"}
 
 modules = ["storage.py",
            "calibration.py",
            "warp.py",
            "hotmax.py",
-           "peakpuzzle.py"]
+           "peakpuzzle.py",
+           "peakmaps.py"]
 
 doc_url = "https://fligt.github.io/maxrf4u/"
 

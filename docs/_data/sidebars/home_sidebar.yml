@@ -10,7 +10,7 @@ entries:
       title: Overview
       url: /
     - output: web,pdf
-      title: 'Susanna '
+      title: 'Meet Susanna '
       url: suzanna.html
     - output: web,pdf
       title: 'Storage '
@@ -27,6 +27,9 @@ entries:
     - output: web,pdf
       title: 'The peak pattern puzzle '
       url: peak-pattern-puzzle.html
+    - output: web,pdf
+      title: Peak slice maps (working on it)
+      url: peakmaps.html
     output: web
     title: maxrf4u
   output: web
