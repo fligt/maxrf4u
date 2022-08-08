@@ -51,6 +51,11 @@ class HotmaxAtlas():
             # correct peak positions due to baseline tilting
             peak_idxs = _untilt(peak_idxs, y_hot, delta=5)
 
+            # promote hotmax peak to first position in list
+            hotmax_i = self.hotmax_pixels[i, 2] # get channel index
+            peak_idxs.remove(hotmax_i) # remove from list
+            peak_idxs.insert(0, hotmax_i) # prepend
+
             self.peak_idxs_list.append(peak_idxs)
 
             peak_labels = [f'[{i}]' for i in range(len(peak_idxs))]
@@ -66,8 +71,23 @@ class HotmaxAtlas():
 
         self.all_peaks_set = np.sort(list(set(self.all_peaks)))
 
+        # add a list with hotslice indices
+        # (hack because we reorder peaks in hotmax spectrum according to height)
 
-    def plot_spectrum(self, n, ax=None, legend=False, headspace=1, footspace=0.1):
+        keV_idxs = self.hotmax_pixels[:,2]
+
+        self.hotslice_idxs = []
+
+        for n, peak_idxs in enumerate(self.peak_idxs_list):
+
+             self.hotslice_idxs.append(peak_idxs.index(keV_idxs[n]))
+
+
+
+
+
+    def plot_spectrum(self, n, ax=None, legend=False, headspace=1, footspace=0.1,
+                      hotlines_ticklabels=True):
 
         if ax is None:
 
@@ -114,7 +134,7 @@ class HotmaxAtlas():
 
 
         # plot limits
-        ymax = 1.15 * self.hotmax_spectra[n].max() # add space for peak lables
+        ymax = 1.15 * self.hotmax_spectra[n].max() # add space for peak labels
         ymin = -ymax / 5
         ax.set_ylim(footspace * ymin, headspace * ymax)
         xlim = self.x_keVs[max(self.hotmax_pixels[:, 2])] + 2
@@ -132,7 +152,7 @@ class HotmaxAtlas():
 
         # plot lines in pattern overview for all hotmax peaks
         lines_x = self.x_keVs[self.hotmax_pixels[:, 2]]
-        ax.vlines(lines_x, ymin=0, ymax=ymax*headspace, color='r', alpha=0.2, zorder=9-30)
+        ax.vlines(lines_x, ymin=0, ymax=2*ymax*headspace, color='r', alpha=0.2, zorder=9-30)
 
 
         # add legend and labels etcetera if standalone
@@ -140,6 +160,19 @@ class HotmaxAtlas():
             ax.set_xlabel('energy [keV]')
             ax.set_ylabel('Intensity [#counts]')
             ax.legend()
+
+        # add hotlines ticklabels
+        if hotlines_ticklabels:
+            x_keVs = self.x_keVs
+            hotmax_z = self.hotmax_pixels[:, 2]
+
+            #ax, _ = hma.plot_spectrum(10)
+            twax = ax.twiny()
+            twax.set_xlim(ax.get_xlim())
+            twax.set_xticks(x_keVs[hotmax_z])
+            twax.set_xticklabels(range(len(hotmax_z)), fontsize=6, color='r')
+
+            twax.tick_params(color=[1, 0.5, 0.5], pad=0)
 
         plt.tight_layout()
 
@@ -158,7 +191,7 @@ class HotmaxAtlas():
         xlim = self.x_keVs[max(self.hotmax_pixels[:, 2])] + 2
 
         for n, ax in enumerate(axs):
-            self.plot_spectrum(n, ax=ax)
+            self.plot_spectrum(n, ax=ax, hotlines_ticklabels=False)
 
             # limits
             ylim = 1.3 * self.hotmax_spectra[n].max()
@@ -170,6 +203,7 @@ class HotmaxAtlas():
 
         plt.tight_layout()
         plt.subplots_adjust(hspace=0.1)
+
 
         if svg:
             plt.savefig('plot.svg')
