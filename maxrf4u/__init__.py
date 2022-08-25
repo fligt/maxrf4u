@@ -6,4 +6,9 @@ from .warp import *
 from .hotmax import * 
 from .peakpuzzle import *
 from .peakmaps import * 
+
+
+#from .segmentation import * 
+#from .fingerprint import * 
+
 #from .speckles import * 

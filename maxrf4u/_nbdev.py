@@ -27,16 +27,8 @@ index = {"Layers": "10_storage.ipynb",
          "plot_puzzle": "50_peak-pattern-puzzle.ipynb",
          "all_elements": "50_peak-pattern-puzzle.ipynb",
          "eoi": "50_peak-pattern-puzzle.ipynb",
-         "gaussian": "60_peakmaps.ipynb",
-         "fit_gaussian": "60_peakmaps.ipynb",
-         "plot_peakslices": "60_peakmaps.ipynb",
-         "get_peakmaps": "60_peakmaps.ipynb",
-         "multi_plot": "60_peakmaps.ipynb",
-         "get_slices": "60_peakmaps.ipynb",
-         "get_hotslices": "60_peakmaps.ipynb",
-         "get_superslices": "60_peakmaps.ipynb",
-         "get_superedges_dict": "60_peakmaps.ipynb",
-         "make_baseline": "60_peakmaps.ipynb"}
+         "get_cube_slices": "60_peakmaps.ipynb",
+         "plot_cube_slices": "60_peakmaps.ipynb"}
 
 modules = ["storage.py",
            "calibration.py",
