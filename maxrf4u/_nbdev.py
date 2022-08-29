@@ -28,7 +28,10 @@ index = {"Layers": "10_storage.ipynb",
          "all_elements": "50_peak-pattern-puzzle.ipynb",
          "eoi": "50_peak-pattern-puzzle.ipynb",
          "get_cube_slices": "60_peakmaps.ipynb",
-         "plot_cube_slices": "60_peakmaps.ipynb"}
+         "plot_cube_slices": "60_peakmaps.ipynb",
+         "get_peakmaps": "60_peakmaps.ipynb",
+         "multi_plot": "60_peakmaps.ipynb",
+         "smooth_compton": "60_peakmaps.ipynb"}
 
 modules = ["storage.py",
            "calibration.py",

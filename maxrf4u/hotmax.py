@@ -345,7 +345,8 @@ def _baseline(x_keVs, spectrum, radius=200, return_indices=False):
     lowest_indices = list(set(index_img[ball_profile, range(w)]))
 
     # create linear interpolation between the selected lowest surges (valleys)
-    interpolation = sip.interp1d(x_keVs[lowest_indices], spectrum[lowest_indices], bounds_error=False)
+    # added fill_value=0 to avoid Nan's if extrapolating loose ends to avoid Nan's in baseline
+    interpolation = sip.interp1d(x_keVs[lowest_indices], spectrum[lowest_indices], bounds_error=False, fill_value=0)
     baseline = interpolation(x_keVs)
 
     # valley indices
