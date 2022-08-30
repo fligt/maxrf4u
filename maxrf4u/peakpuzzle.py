@@ -30,6 +30,8 @@ eoi = [e for e in all_elements if not '#' in e]
 def get_patterns(elements, tube_keV=30, eoi=None):
     '''Returns sorted pattern dict list, according to alpha peak energy. '''
 
+
+
     ptrn_dict_list = []
 
     for elem in elements:
@@ -44,11 +46,17 @@ def get_patterns(elements, tube_keV=30, eoi=None):
 
         peaks_xy = np.c_[peaks_x, peaks_y]
 
+        alpha_escape_keV = alpha_keV - 1.74  # Silicon detector escape energy shift
+
         color = colorize(elem, eoi=eoi)
 
         name = mendeleev.element(elem).name
 
-        ptrn_dict = {'elem': elem, 'name': name, 'peaks_xy': peaks_xy, 'color': color}
+        ptrn_dict = {'elem': elem,
+                     'name': name,
+                     'peaks_xy': peaks_xy,
+                     'alpha_escape_keV': alpha_escape_keV,
+                     'color': color}
 
         ptrn_dict_list.append(ptrn_dict)
 
@@ -103,13 +111,15 @@ def colorize(elem, eoi=None):
     return color
 
 
-def plot_ptrn(elem, y, ax, eoi=None):
+def plot_ptrn(elem, y, ax, eoi=None, escape=True):
     '''Low level plot element pattern at level `y` in axes `ax`.'''
 
     ptrn = get_patterns([elem], eoi=eoi)[0]
 
     peaks_x, peaks_y = ptrn['peaks_xy'].T
     color = ptrn['color']
+
+    alpha_escape_keV = ptrn['alpha_escape_keV']
 
     left_x = min(peaks_x)
     right_x = max(peaks_x)
@@ -124,14 +134,20 @@ def plot_ptrn(elem, y, ax, eoi=None):
     ax.scatter(peaks_x, y * ones, s=15, color=color)
     ax.plot([left_x, right_x], [y, y], color=color, alpha=0.3)
     ax.scatter(peaks_x[0], y, marker='s', s=40, color=color)
+
+    if escape is True:
+        ax.scatter(alpha_escape_keV, y, marker='|', s=15, color=color)
+
     ax.annotate(ptrn['elem'], [right_x, y], xytext=[5, -1], fontsize=8, color=color,
                 textcoords='offset points', ha='left', va='center')
+
+
 
 
     return ptrn
 
 
-def plot_patterns(ptrn_list, ax=None, eoi=None):
+def plot_patterns(ptrn_list, ax=None, eoi=None, escape=True):
     '''Plot overview of element patterns `ptrn_list` in axes `ax`'''
 
     n_ptrns = len(ptrn_list)
@@ -146,7 +162,7 @@ def plot_patterns(ptrn_list, ax=None, eoi=None):
 
     for i, ptrn in enumerate(ptrn_list):
 
-        plot_ptrn(ptrn['elem'], i, ax, eoi=eoi)
+        plot_ptrn(ptrn['elem'], i, ax, eoi=eoi, escape=escape)
 
     ax.set_yticks(range(n_ptrns))
     ax.set_yticklabels(element_labels, fontsize=8)
