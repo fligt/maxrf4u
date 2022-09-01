@@ -31,7 +31,8 @@ index = {"Layers": "10_storage.ipynb",
          "plot_cube_slices": "60_peakmaps.ipynb",
          "get_peakmaps": "60_peakmaps.ipynb",
          "multi_plot": "60_peakmaps.ipynb",
-         "smooth_compton": "60_peakmaps.ipynb"}
+         "get_continuum": "60_peakmaps.ipynb",
+         "get_gap_average": "60_peakmaps.ipynb"}
 
 modules = ["storage.py",
            "calibration.py",
