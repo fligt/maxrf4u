@@ -37,7 +37,7 @@ nb_path: "notebooks/60_peakmaps.ipynb"
 $$ X \approx H \times W $$
 {% endraw %}</p>
 <p>Different mathematical techniques have been developed for decomposing spectra into it's components. Best suited to our needs is a technique called Non-negative Matrix Factorization (NMF). Unlike other algorithms the NMF algorithm ensures that both the computed component spectra and their concentrations can not be negative.</p>
-<h2 id="The-2xNMF-algorithm">The 2xNMF algorithm<a class="anchor-link" href="#The-2xNMF-algorithm"> </a></h2><p>The NMF algorithm is implemented in the scikit learn package and is fairly straightforward to use. In our case however we need to take into account that our data cube does not fit into memory all at once. As a workaround I will unmix/simplify the spectral data in two steps, applying the NMF algorithm twice.</p>
+<h2 id="Nonnegative-Matrix-Factorization-twice">Nonnegative Matrix Factorization twice<a class="anchor-link" href="#Nonnegative-Matrix-Factorization-twice"> </a></h2><p>The NMF algorithm is implemented in the scikit learn package and is fairly straightforward to use. In our case however we need to take into account that our data cube does not fit into memory all at once. As a workaround I will unmix/simplify the spectral data in two steps, applying the NMF algorithm twice.</p>
 <p><strong>STEP 1: Gaussian peak fitting</strong></p>
 <p>The idea of step one is resolve the problem of overlapping peak regions using NMF. This is done by first fitting Gaussian shaped peak profiles the all hotmax pixel peaks in all hotmax spectra. In order to get an idea what this means let's first fit a single spectrum using the <code>fit_spectrum()</code> function.</p>
 
@@ -107,10 +107,10 @@ $$ X \approx H \times W $$
 
 
 
-<div id="a093c9ac-baa4-404e-88ab-58d2552cabb8"></div>
+<div id="26cb520f-1137-4d1f-b667-425def6c840d"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#a093c9ac-baa4-404e-88ab-58d2552cabb8');
+var element = $('#26cb520f-1137-4d1f-b667-425def6c840d');
 /* Put everything inside the global mpl namespace */
 /* global mpl */
 window.mpl = {};
