@@ -29,7 +29,10 @@ index = {"Layers": "10_storage.ipynb",
          "eoi": "50_peak-pattern-puzzle.ipynb",
          "get_continuum": "60_peakmaps.ipynb",
          "get_gaussians": "60_peakmaps.ipynb",
-         "fit_spectrum": "60_peakmaps.ipynb"}
+         "fit_spectrum": "60_peakmaps.ipynb",
+         "get_spectral_slices": "60_peakmaps.ipynb",
+         "compute_nmf_peakmaps": "60_peakmaps.ipynb",
+         "multi_plot": "60_peakmaps.ipynb"}
 
 modules = ["storage.py",
            "calibration.py",
