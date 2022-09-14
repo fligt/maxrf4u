@@ -12,6 +12,7 @@ import numpy as np
 import scipy.interpolate as sip
 import scipy.signal as ssg
 import matplotlib.pyplot as plt
+from IPython.display import SVG
 
 import sklearn.decomposition as skd
 
@@ -274,9 +275,14 @@ def compute_nmf_peakmaps(datastack_file):
 
 def multi_plot(*images, hot_pixel=None, titles=None, roi_list=None, axis_off=False,
                sharex=True, sharey=True, vmin=None, vmax=None, cmap='viridis',
-               fontsize='medium', zoom_xyc=None, zoom_half_wh=[100, 100]):
+               fontsize='medium', zoom_xyc=None, zoom_half_wh=[100, 100], svg=False):
     '''Inspect multiple images simultaneously...
+
     Fold along multiple rows if n > 4'''
+
+    if svg:
+        plt.ioff()
+
     nrows_max = 4
     n_img = len(images)
     nrows = (n_img // nrows_max) # completely filled rows
@@ -312,7 +318,16 @@ def multi_plot(*images, hot_pixel=None, titles=None, roi_list=None, axis_off=Fal
         axs_flat = axs.flatten()
         for ax in axs_flat:
             ax.set_axis_off()
-    fig.subplots_adjust(hspace=0.1, wspace=0.1)
+    fig.subplots_adjust(hspace=0.1, wspace=0.03)
     plt.tight_layout()
+
+
+    # larger image in documentation
+    if svg:
+        plt.savefig('plot.svg')
+        fig.clear()
+        plt.ion()
+        return SVG('plot.svg')
+
     return fig, axs
 
