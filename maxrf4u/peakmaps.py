@@ -270,6 +270,15 @@ def compute_nmf_peakmaps(datastack_file):
 
     peak_maps = peak_map_stack.transpose([2, 0, 1])
 
+    # user input
+    write = input('Write peak maps factorization to datastack file [y/n]? ')
+
+    if write == 'y':
+        maxrf4u.append(peak_maps, 'nmf_peakmaps', datastack_file)
+        maxrf4u.append(H, 'nmf_gausscomponents', datastack_file)
+
+        print(f'\nSaved NMF peak maps data to: {datastack_file}')
+
     return peak_maps
 
 

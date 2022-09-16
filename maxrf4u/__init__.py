@@ -6,6 +6,7 @@ from .warp import *
 from .hotmax import * 
 from .peakpuzzle import *
 from .peakmaps import * 
+from .xphysics import * 
 
 
 #from .segmentation import * 

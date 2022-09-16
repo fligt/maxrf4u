@@ -32,14 +32,18 @@ index = {"Layers": "10_storage.ipynb",
          "fit_spectrum": "60_peakmaps.ipynb",
          "get_spectral_slices": "60_peakmaps.ipynb",
          "compute_nmf_peakmaps": "60_peakmaps.ipynb",
-         "multi_plot": "60_peakmaps.ipynb"}
+         "multi_plot": "60_peakmaps.ipynb",
+         "gaussian_convolve": "90_xphysics.ipynb",
+         "ElementLines": "90_xphysics.ipynb",
+         "xrf_spectrum": "90_xphysics.ipynb"}
 
 modules = ["storage.py",
            "calibration.py",
            "warp.py",
            "hotmax.py",
            "peakpuzzle.py",
-           "peakmaps.py"]
+           "peakmaps.py",
+           "xphysics.py"]
 
 doc_url = "https://fligt.github.io/maxrf4u/"
 
