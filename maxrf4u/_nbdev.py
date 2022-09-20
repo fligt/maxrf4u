@@ -35,7 +35,8 @@ index = {"Layers": "10_storage.ipynb",
          "multi_plot": "60_peakmaps.ipynb",
          "gaussian_convolve": "90_xphysics.ipynb",
          "ElementLines": "90_xphysics.ipynb",
-         "xrf_spectrum": "90_xphysics.ipynb"}
+         "get_element_spectrum": "90_xphysics.ipynb",
+         "get_element_spectra": "90_xphysics.ipynb"}
 
 modules = ["storage.py",
            "calibration.py",

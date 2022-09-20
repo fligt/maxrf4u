@@ -85,7 +85,7 @@ def _fit_gaussian(x, y, peak_idx, rel_height=0.2, baseline=None):
     return y_gauss, baseline
 
 
-def get_gaussians(datastack_file, tail_clip=0.05):
+def get_gaussians(datastack_file, tail_clip=0.05, norm=True):
     '''Computes fitted and clipped Gaussian peak shapes for all hotmax pixels.
 
     Returns: y_gauss_list'''
@@ -111,6 +111,10 @@ def get_gaussians(datastack_file, tail_clip=0.05):
         y_gauss_fit, baseline = _fit_gaussian(x_keVs, y_hot, peak_idx, baseline=baseline)
 
         y_gauss_flat =  y_gauss_fit - baseline
+
+        if norm is True:
+            y_gauss_flat = y_gauss_flat / y_gauss_flat.max()
+
         y_gauss_list.append(y_gauss_flat)
 
     return y_gauss_list
@@ -129,7 +133,7 @@ def fit_spectrum(y, datastack_file):
 
     y_continuum = get_continuum('RP-T-1898-A-3689.datastack')
 
-    y_gauss_list = get_gaussians('RP-T-1898-A-3689.datastack')
+    y_gauss_list = get_gaussians('RP-T-1898-A-3689.datastack', norm=False)
 
     # create component vectors
     H = np.array([y_gauss for y_gauss in y_gauss_list]).astype(np.float32)
@@ -159,7 +163,7 @@ def fit_spectrum(y, datastack_file):
 
 
 
-def _add_hotlines_ticklabels(datastack_file, ax, clip_vline=True):
+def _add_hotlines_ticklabels(datastack_file, ax, vlines=True, clip_vline=True):
     '''Utility function. Adds hotlines and tick labels to plot `ax`.
 
     '''
@@ -174,15 +178,17 @@ def _add_hotlines_ticklabels(datastack_file, ax, clip_vline=True):
 
     ymin, ymax = ax.get_ylim()
 
-    # clip vlines at y=0
-    if clip_vline:
-        ax.vlines(x_keVs[peak_idxs], 0, 1.2*ymax, color='r', alpha=0.2, zorder=9-30)
-        ax.set_ylim(ymin, ymax)
+    # include vlines in plot
+    if vlines:
+        # clip vlines at y=0
+        if clip_vline:
+            ax.vlines(x_keVs[peak_idxs], 0, 1.2*ymax, color='r', alpha=0.2, zorder=9-30)
+            ax.set_ylim(ymin, ymax)
 
-    # do not clip vlines
-    else:
-        for x in x_keVs[peak_idxs]:
-            ax.axvline(x, color='r', alpha=0.2, zorder=9-30)
+        # do not clip vlines
+        else:
+            for x in x_keVs[peak_idxs]:
+                ax.axvline(x, color='r', alpha=0.2, zorder=9-30)
 
     secax.set_xticks(x_keVs[peak_idxs])
     secax.set_xticklabels(range(len(peak_idxs)), fontsize=6, color='r')
