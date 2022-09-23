@@ -6,10 +6,15 @@ from .warp import *
 from .hotmax import * 
 from .peakpuzzle import *
 from .peakmaps import * 
+
+from .speckles import * 
+
+from .fingerprints import * 
+
 from .xphysics import * 
 
 
 #from .segmentation import * 
-#from .fingerprint import * 
 
-#from .speckles import * 
+
+

@@ -31,6 +31,12 @@ entries:
       title: 'Distribution maps   '
       url: peakmaps.html
     - output: web,pdf
+      title: 'Speckles '
+      url: speckles.html
+    - output: web,pdf
+      title: 'Fingerprints '
+      url: fingerprints.html
+    - output: web,pdf
       title: 'XRF physics - the gory details  '
       url: xphysics.html
     output: web
