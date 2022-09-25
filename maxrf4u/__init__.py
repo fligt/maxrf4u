@@ -7,9 +7,9 @@ from .hotmax import *
 from .peakpuzzle import *
 from .peakmaps import * 
 
-from .speckles import * 
+#from .speckles import * 
 
-from .fingerprints import * 
+#from .fingerprints import * 
 
 from .xphysics import * 
 
