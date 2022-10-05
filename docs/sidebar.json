@@ -2,13 +2,13 @@
   "maxrf4u": {
     "Overview": "/",
     "Meet Susanna ": "suzanna.html",
-    "Interactive plotting ": "interactive-plotting.html",
     "Storage ": "storage.html",
     "Calibration  ": "calibration.html",
     "Spatial versus spectral ": "spatial-verus-spectral.html",
     "Hotmax spectra ": "hotmax.html",
     "The peak pattern puzzle ": "peak-pattern-puzzle.html",
     "Distribution maps   ": "peakmaps.html",
-    "XRF physics - the gory details  ": "xphysics.html"
+    "XRF physics - the gory details  ": "xphysics.html",
+    "Interactive plotting ": "interactive-plotting.html"
   }
 }

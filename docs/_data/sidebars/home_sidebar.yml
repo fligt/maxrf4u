@@ -13,9 +13,6 @@ entries:
       title: 'Meet Susanna '
       url: suzanna.html
     - output: web,pdf
-      title: 'Interactive plotting '
-      url: interactive-plotting.html
-    - output: web,pdf
       title: 'Storage '
       url: storage.html
     - output: web,pdf
@@ -36,6 +33,9 @@ entries:
     - output: web,pdf
       title: 'XRF physics - the gory details  '
       url: xphysics.html
+    - output: web,pdf
+      title: 'Interactive plotting '
+      url: interactive-plotting.html
     output: web
     title: maxrf4u
   output: web
