@@ -13,6 +13,9 @@ entries:
       title: 'Meet Susanna '
       url: suzanna.html
     - output: web,pdf
+      title: 'Interactive plotting '
+      url: interactive-plotting.html
+    - output: web,pdf
       title: 'Storage '
       url: storage.html
     - output: web,pdf

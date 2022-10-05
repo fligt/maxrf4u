@@ -23,7 +23,7 @@ import cv2
 def img_to_url(img_data, max_width=None):
     '''Filename or numpy array *img_data* is transformed into base64 encoded url string.
 
-    To compress image specify thumbnail `width`.
+    To compress image specify thumbnail `max_width`.
 
     Returns: url_string, shape'''
 
