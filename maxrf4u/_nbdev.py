@@ -42,7 +42,9 @@ index = {"Layers": "10_storage.ipynb",
          "gaussian_convolve": "90_xphysics.ipynb",
          "ElementLines": "90_xphysics.ipynb",
          "get_element_spectrum": "90_xphysics.ipynb",
-         "get_element_spectra": "90_xphysics.ipynb"}
+         "get_element_spectra": "90_xphysics.ipynb",
+         "make_gridbox": "91_interactive-plotting.ipynb",
+         "export_html": "91_interactive-plotting.ipynb"}
 
 modules = ["storage.py",
            "calibration.py",
@@ -50,7 +52,8 @@ modules = ["storage.py",
            "hotmax.py",
            "peakpuzzle.py",
            "peakmaps.py",
-           "xphysics.py"]
+           "xphysics.py",
+           "interactive_visualization.py"]
 
 doc_url = "https://fligt.github.io/maxrf4u/"
 

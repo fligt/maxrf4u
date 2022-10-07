@@ -13,6 +13,7 @@ from .peakmaps import *
 
 from .xphysics import * 
 
+from .interactive_visualization import * 
 
 #from .segmentation import * 
 

@@ -15,22 +15,27 @@ import matplotlib.pyplot as plt
 import numpy as np
 import base64
 import skimage.transform as skt
+#from skimage.io import imread
+import imageio
+
+import skimage
 
 import numpy as np
 import cv2
 
 
 def img_to_url(img_data, max_width=None):
-    '''Filename or numpy array *img_data* is transformed into base64 encoded url string.
+    '''Filename or numpy array *img_data* is transformed into color compressed base64 encoded url string.
 
-    To compress image specify thumbnail `max_width`.
+    To reduce image size specify thumbnail `max_width`.
 
     Returns: url_string, shape'''
 
     try:
-        img = plt.imread(img_data) # if img_data is an image file path
+        # better than matplotlib use skimage.io.imread to avoid float explosion...
+        img = imageio.imread(img_data) # if img_data is an image file path
     except:
-        img = img_data # assuming img_data is an image like numpy array
+        img = img_data # otherwise assume img_data is an image like numpy array
 
     shape = img.shape[0:2] # height and width only
     h, w = shape
@@ -41,13 +46,21 @@ def img_to_url(img_data, max_width=None):
             scale = max_width / w
             img = skt.rescale(img, scale, multichannel=True)
 
+    # reduce colors to 256 levels to keep file size minimal
+    img_ubyte = skimage.util.img_as_ubyte(img)
 
+    # write to buffer
     buff = io.BytesIO();
-    plt.imsave(buff, img, format='png')
-    plt.close()
+    plt.imsave(buff, img_ubyte, format='png')
 
+
+    # convert to base64 string
     base64_string = base64.b64encode(buff.getvalue()).decode("ascii")
     url_string = f'data:image/png;base64,{base64_string}'
+
+    # let's close this just in case
+    buff.close()
+
 
     return url_string, shape
 
