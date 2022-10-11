@@ -6,8 +6,8 @@ title: Interactive plotting
 keywords: fastai
 sidebar: home_sidebar
 
-summary: "The amazing possibilities of ipywidgets"
-description: "The amazing possibilities of ipywidgets"
+summary: "The amazing possibilities of Jupyter ipywidgets"
+description: "The amazing possibilities of Jupyter ipywidgets"
 nb_path: "notebooks/91_interactive-plotting.ipynb"
 ---
 <!--
@@ -31,7 +31,7 @@ nb_path: "notebooks/91_interactive-plotting.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The whole point of doing all this is of course to be able to communicate the results of data processing in as rich a manner as possible.</p>
+<p>The whole point of doing all this is of course to be able to communicate the results of data processing in as rich a manner as possible.  We have saved the calculated element maps in our datastack file. First create a standard static plot.</p>
 
 </div>
 </div>
@@ -39,53 +39,49 @@ nb_path: "notebooks/91_interactive-plotting.ipynb"
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-<div class="input">
+<details class="description">
+      <summary data-open="Hide Code" data-close="Show Code"></summary>
+        <summary></summary>
+        <div class="input">
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#import os </span>
-<span class="c1">#os.chdir(&#39;/home/frank/Work/Projecten/DoRe/viz/raw_nmf&#39;)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2 
+<span class="o">%</span><span class="k">matplotlib</span> notebook
+
+<span class="kn">import</span> <span class="nn">os</span> 
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;/home/frank/Work/Projecten/DoRe/viz/raw_nmf&#39;</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span> 
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span> 
+<span class="kn">import</span> <span class="nn">skimage.exposure</span> <span class="k">as</span> <span class="nn">ske</span>
+<span class="kn">import</span> <span class="nn">os</span> 
+
+<span class="kn">from</span> <span class="nn">maxrf4u</span> <span class="kn">import</span> <span class="n">DataStack</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
+    </details>
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>We have saved the calculated element maps in our datastack file. First create a standard static plot.</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-<div class="input">
+<details class="description">
+      <summary data-open="Hide Code" data-close="Show Code"></summary>
+        <summary></summary>
+        <div class="input">
 
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">maxrf4u</span> <span class="kn">import</span> <span class="n">multi_plot</span>
-</pre></div>
 
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">datastack_file</span> <span class="o">=</span> <span class="s1">&#39;/home/frank/Work/Projecten/DoRe/viz/raw_nmf/RP-T-1898-A-3689.datastack&#39;</span> 
+<span class="n">datastack_file</span> <span class="o">=</span> <span class="s1">&#39;/home/frank/Work/Projecten/DoRe/viz/raw_nmf/RP-T-1898-A-3689.datastack&#39;</span> 
 <span class="n">ds</span> <span class="o">=</span> <span class="n">DataStack</span><span class="p">(</span><span class="n">datastack_file</span><span class="p">)</span>
 
 <span class="n">elements</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;nmf_elements&#39;</span><span class="p">)</span>
@@ -99,6 +95,7 @@ nb_path: "notebooks/91_interactive-plotting.ipynb"
 </div>
 </div>
 
+    </details>
 <div class="output_wrapper">
 <div class="output">
 
@@ -107,10 +104,10 @@ nb_path: "notebooks/91_interactive-plotting.ipynb"
 
 
 
-<div id="f03c005c-fddd-4f78-b750-b3f8b4088138"></div>
+<div id="953ae1ed-d71a-479c-a0de-bdbd4ae88811"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#f03c005c-fddd-4f78-b750-b3f8b4088138');
+var element = $('#953ae1ed-d71a-479c-a0de-bdbd4ae88811');
 /* Put everything inside the global mpl namespace */
 /* global mpl */
 window.mpl = {};
@@ -1088,7 +1085,7 @@ if (IPython.notebook.kernel !== null) {
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>So let's now see if we can plot them as an interactive html page. In order to do so, we need first to create a gridbox visualization using the <code>make_gridbox()</code> function.</p>
+<p>So let's now see if we can plot them as an interactive html page. In order to do so, we need first to create a gridbox visualization widget using the <code>make_gridbox_widget()</code> function.</p>
 
 </div>
 </div>
@@ -1100,8 +1097,8 @@ if (IPython.notebook.kernel !== null) {
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">maxrf4u</span> <span class="kn">import</span> <span class="n">make_gridbox</span><span class="p">,</span> <span class="n">export_html</span>  
-<span class="n">gridbox</span> <span class="o">=</span> <span class="n">make_gridbox</span><span class="p">(</span><span class="n">element_maps_histeq</span><span class="p">,</span> <span class="n">elements</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">maxrf4u</span> <span class="kn">import</span> <span class="n">make_gridbox_widget</span><span class="p">,</span> <span class="n">export_interactive_html</span>  
+<span class="n">gridbox</span> <span class="o">=</span> <span class="n">make_gridbox_widget</span><span class="p">(</span><span class="n">element_maps_histeq</span><span class="p">,</span> <span class="n">elements</span><span class="p">)</span> 
 </pre></div>
 
     </div>
@@ -1134,7 +1131,7 @@ Ready! Total string length: 87.45 MB
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">export_html</span><span class="p">(</span><span class="n">gridbox</span><span class="p">,</span> <span class="s1">&#39;RP-T-1898-A-3689_elementmaps&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">export_interactive_html</span><span class="p">(</span><span class="n">gridbox</span><span class="p">,</span> <span class="s1">&#39;RP-T-1898-A-3689_elementmaps&#39;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -1147,10 +1144,7 @@ Ready! Total string length: 87.45 MB
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Saving interactive html to: 
-
-../docs/RP-T-1898-A-3689_elementmaps_interactive.html
-
+<pre>Saving interactive html to mounted cloud storage...
 Ready!
 </pre>
 </div>
@@ -1159,8 +1153,9 @@ Ready!
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea output_execute_result">
-<a href="RP-T-1898-A-3689_elementmaps_interactive.html">Click this link for interactive plot</a>
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&#39;&lt;a href=&#34;https://f002.backblazeb2.com/file/dore-viz/RP-T-1898-A-3689_elementmaps_interactive.html&#34;&gt;Click this link for interactive plot (87.0 MB)&lt;/a&gt;&#39;</pre>
 </div>
 
 </div>
@@ -1171,6 +1166,13 @@ Ready!
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="https://f002.backblazeb2.com/file/dore-viz/RP-T-1898-A-3689_elementmaps_interactive.html">Click this link for interactive plot (87.0 MB)</a></p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="FUNCTIONS">FUNCTIONS<a class="anchor-link" href="#FUNCTIONS"> </a></h2>
@@ -1188,7 +1190,7 @@ Ready!
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="make_gridbox" class="doc_header"><code>make_gridbox</code><a href="https://github.com/fligt/maxrf4u/tree/main/maxrf4u/interactive_visualization.py#L24" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>make_gridbox</code>(<strong><code>images</code></strong>, <strong><code>titles</code></strong>)</p>
+<h4 id="make_gridbox_widget" class="doc_header"><code>make_gridbox_widget</code><a href="https://github.com/fligt/maxrf4u/tree/main/maxrf4u/interactive_visualization.py#L24" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>make_gridbox_widget</code>(<strong><code>images</code></strong>, <strong><code>titles</code></strong>)</p>
 </blockquote>
 
 </div>
@@ -1212,7 +1214,7 @@ Ready!
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="export_html" class="doc_header"><code>export_html</code><a href="https://github.com/fligt/maxrf4u/tree/main/maxrf4u/interactive_visualization.py#L83" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>export_html</code>(<strong><code>gridbox</code></strong>, <strong><code>basename</code></strong>, <strong><code>ext</code></strong>=<em><code>'_interactive.html'</code></em>, <strong><code>to_docs</code></strong>=<em><code>True</code></em>, <strong><code>docs_folder</code></strong>=<em><code>'../docs/'</code></em>)</p>
+<h4 id="export_interactive_html" class="doc_header"><code>export_interactive_html</code><a href="https://github.com/fligt/maxrf4u/tree/main/maxrf4u/interactive_visualization.py#L84" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>export_interactive_html</code>(<strong><code>widget</code></strong>, <strong><code>basename</code></strong>, <strong><code>ext</code></strong>=<em><code>'_interactive.html'</code></em>, <strong><code>save_dir</code></strong>=<em><code>'/media/frank/b2/dore-viz/'</code></em>, <strong><code>web_dir</code></strong>=<em><code>'https://f002.backblazeb2.com/file/dore-viz/'</code></em>)</p>
 </blockquote>
 
 </div>
