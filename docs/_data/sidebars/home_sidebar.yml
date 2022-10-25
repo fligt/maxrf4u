@@ -34,7 +34,7 @@ entries:
       title: 'XRF physics - the gory details  '
       url: xphysics.html
     - output: web,pdf
-      title: 'Interactive plotting '
+      title: 'About interactive visualization using cloud storage '
       url: interactive-plotting.html
     output: web
     title: maxrf4u

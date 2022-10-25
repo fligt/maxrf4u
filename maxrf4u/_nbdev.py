@@ -43,8 +43,9 @@ index = {"Layers": "10_storage.ipynb",
          "ElementLines": "90_xphysics.ipynb",
          "get_element_spectrum": "90_xphysics.ipynb",
          "get_element_spectra": "90_xphysics.ipynb",
-         "make_gridbox_widget": "91_interactive-plotting.ipynb",
-         "export_interactive_html": "91_interactive-plotting.ipynb"}
+         "UploadDir": "91_interactive-plotting.ipynb",
+         "make_filenames": "91_interactive-plotting.ipynb",
+         "make_gridbox_widget": "91_interactive-plotting.ipynb"}
 
 modules = ["storage.py",
            "calibration.py",

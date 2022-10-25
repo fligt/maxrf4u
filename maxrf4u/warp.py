@@ -25,7 +25,7 @@ import cv2
 
 
 def img_to_url(img_data, max_width=None):
-    '''Filename or numpy array *img_data* is transformed into color compressed base64 encoded url string.
+    '''Filename or numpy array *img_data* is transformed into 256 bit color compressed base64 encoded url string.
 
     To reduce image size specify thumbnail `max_width`.
 
@@ -58,7 +58,7 @@ def img_to_url(img_data, max_width=None):
     base64_string = base64.b64encode(buff.getvalue()).decode("ascii")
     url_string = f'data:image/png;base64,{base64_string}'
 
-    # let's close this just in case
+    # let's close buffer just in case
     buff.close()
 
 

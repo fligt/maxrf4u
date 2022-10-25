@@ -76,10 +76,10 @@ nb_path: "notebooks/30_spatial-verus-spectral.ipynb"
 
 
 
-<div id="c77d14b1-4b5e-474b-b6b3-8eae3fc99119"></div>
+<div id="8a08d632-46e3-4c71-86a1-099b6c45da2c"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#c77d14b1-4b5e-474b-b6b3-8eae3fc99119');
+var element = $('#8a08d632-46e3-4c71-86a1-099b6c45da2c');
 /* Put everything inside the global mpl namespace */
 /* global mpl */
 window.mpl = {};
@@ -1109,10 +1109,10 @@ if (IPython.notebook.kernel !== null) {
 
 
 
-<div id="af832a55-0032-4468-9131-6aa5c766bcbc"></div>
+<div id="a4f057e8-2663-4c24-a666-64ee730e1406"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#af832a55-0032-4468-9131-6aa5c766bcbc');
+var element = $('#a4f057e8-2663-4c24-a666-64ee730e1406');
 /* Put everything inside the global mpl namespace */
 /* global mpl */
 window.mpl = {};
@@ -2136,7 +2136,7 @@ if (IPython.notebook.kernel !== null) {
 <span class="n">susanna_highres</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">susanna_highres_file</span><span class="p">)</span>
 
 <span class="n">im_src</span> <span class="o">=</span> <span class="n">susanna_highres</span>
-<span class="n">im_dst</span> <span class="o">=</span> <span class="n">FeKa_map</span> 
+<span class="n">im_dst</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">FeKa_map</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> 
 </pre></div>
 
     </div>
@@ -2153,7 +2153,7 @@ if (IPython.notebook.kernel !== null) {
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">imreg</span> <span class="o">=</span> <span class="n">ImageRegistrationHelper</span><span class="p">(</span><span class="n">im_src</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">im_dst</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">imreg</span> <span class="o">=</span> <span class="n">ImageRegistrationHelper</span><span class="p">(</span><span class="n">im_src</span><span class="p">,</span> <span class="n">im_dst</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -2260,10 +2260,10 @@ dst_points = [[-0.5, -0.5], [1591.5, -0.5], [1591.5, 1691.5], [-0.5, 1691.5]]
 
 
 
-<div id="676be3a5-0eaa-4948-9efa-50b365e4bab2"></div>
+<div id="5d6cfa6f-08f1-4045-a6e9-17c958c37851"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#676be3a5-0eaa-4948-9efa-50b365e4bab2');
+var element = $('#5d6cfa6f-08f1-4045-a6e9-17c958c37851');
 /* Put everything inside the global mpl namespace */
 /* global mpl */
 window.mpl = {};
@@ -3277,7 +3277,7 @@ if (IPython.notebook.kernel !== null) {
 <h4 id="img_to_url" class="doc_header"><code>img_to_url</code><a href="https://github.com/fligt/maxrf4u/tree/main/maxrf4u/warp.py#L27" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>img_to_url</code>(<strong><code>img_data</code></strong>, <strong><code>max_width</code></strong>=<em><code>None</code></em>)</p>
 </blockquote>
 
-<pre><code>Filename or numpy array *img_data* is transformed into color compressed base64 encoded url string.
+<pre><code>Filename or numpy array *img_data* is transformed into 256 bit color compressed base64 encoded url string.
 
 To reduce image size specify thumbnail `max_width`.
 
