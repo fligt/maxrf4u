@@ -86,9 +86,10 @@ def _fit_gaussian(x, y, peak_idx, rel_height=0.2, baseline=None):
 
 
 def get_gaussians(datastack_file, tail_clip=0.05, norm=True):
-    '''Computes fitted and clipped Gaussian peak shapes for all hotmax pixels.
+    '''Computes fitted Gaussian peak profiles for all hotmax pixels.
 
-    Returns: y_gauss_list'''
+    Returns: y_gauss_list
+    '''
 
     # read stuff from datastack
     ds = maxrf4u.DataStack(datastack_file)
