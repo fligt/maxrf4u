@@ -29,10 +29,20 @@ nb_path: "notebooks/55_peak-pattern-puzzle-solver.ipynb"
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In the previous section we saw how to explain the presence of specific in the individual hotmax spectra using the instrument and element peak patterns by hand. Tedious work, but not too difficult. The algorithm for solving the peak pattern puzzle for a spectrum works as follows. As an example walk, let's walk through hotmax spectrum <strong>#4</strong>. In the plot we see thirteen peaks that exceed the noise threshold. We need to explain these peaks away, one by one.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-<div class="input">
+<details class="description">
+      <summary data-open="Hide Code" data-close="Show Code"></summary>
+        <summary></summary>
+        <div class="input">
 
 <div class="inner_cell">
     <div class="input_area">
@@ -55,6 +65,7 @@ nb_path: "notebooks/55_peak-pattern-puzzle-solver.ipynb"
 </div>
 </div>
 
+    </details>
 </div>
     {% endraw %}
 
@@ -66,23 +77,8 @@ nb_path: "notebooks/55_peak-pattern-puzzle-solver.ipynb"
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">hma</span> <span class="o">=</span> <span class="n">HotmaxAtlas</span><span class="p">(</span><span class="s1">&#39;RP-T-1898-A-3689.datastack&#39;</span><span class="p">)</span>
-</pre></div>
 
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plot_puzzle</span><span class="p">(</span><span class="n">hma</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>
+<span class="n">plot_puzzle</span><span class="p">(</span><span class="n">hma</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>
 </pre></div>
 
     </div>
@@ -97,10 +93,10 @@ nb_path: "notebooks/55_peak-pattern-puzzle-solver.ipynb"
 
 
 
-<div id="b73015d7-8ed7-4811-af83-57073211bc93"></div>
+<div id="a6fce963-65e7-4118-b75a-3cf6bcbb4b14"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#b73015d7-8ed7-4811-af83-57073211bc93');
+var element = $('#a6fce963-65e7-4118-b75a-3cf6bcbb4b14');
 /* Put everything inside the global mpl namespace */
 /* global mpl */
 window.mpl = {};
@@ -1078,7 +1074,6 @@ if (IPython.notebook.kernel !== null) {
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>In the previous section we saw how to explain the presence of specific in the individual hotmax spectra using the instrument and element peak patterns by hand. Tedious work, but not too difficult. The basic steps for solving the peak pattern puzzle for a spectrum were as follows. As an example walk, let's walk through hotmax spectrum <strong>#4</strong>. In the plot we see thirteen peaks that exceed the noise threshold. We need to explain these peaks away, one by one.</p>
 
 <pre><code># exclude instrument peaks in preliminary step (only once) 
 unexplained_peaks = [0, 1, 2, 3, 4, 5, 6, 7 , 8, 9, 10, 11, 12] 
