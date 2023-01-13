@@ -152,7 +152,7 @@ def plot_ptrn(elem, y, ax, eoi=None, escape=True):
     return ptrn
 
 
-def plot_patterns(ptrn_list, instrument=False, datastack_file=None, ax=None, eoi=None, escape=True):
+def plot_patterns(ptrn_list, instrument_pattern=None, datastack_file=None, ax=None, eoi=None, escape=True):
     '''Plot overview of instrument and element patterns `ptrn_list` in axes `ax`
 
     Returns: `ax`
@@ -172,13 +172,12 @@ def plot_patterns(ptrn_list, instrument=False, datastack_file=None, ax=None, eoi
 
     # plot instrument pattern X X X
 
-    if instrument:
-        assert datastack_file is not None, 'Datastack file required to compute instrument pattern.'
+    if instrument_pattern is not None:
         n_ticks += 1
         offset = 1
         ytick_labels = ['INSTRUMENT'] + ytick_labels
 
-        peaks = get_instrument_pattern(datastack_file)['instrument_peaks']
+        peaks = instrument_pattern['instrument_peaks']
 
         zeros = np.zeros_like(peaks)
 
@@ -200,30 +199,35 @@ def plot_patterns(ptrn_list, instrument=False, datastack_file=None, ax=None, eoi
     return ax
 
 
-def plot_puzzle(hma, n):
+def plot_puzzle(datastack_file, n, elements=None, footspace=0.2):
+    '''Plot peak pattern puzzle with patterns and spectrum'''
 
-    fig, [ax0, ax1] = plt.subplots(nrows=2, sharex=True, figsize=[9, 9])
+    # generate patterns
+    if elements is None:
+        elements = eoi
 
-    ax0.set_yticks([])
+    elem_ptrns = get_patterns(elements)
+    instrum_ptrn = get_instrument_pattern(datastack_file)
 
-    # pattern overview
-    twax = ax0.twinx()
-    eoi_ptrns = get_patterns(eoi)
-    plot_patterns(eoi_ptrns, ax=twax)
+    # prepare figure
+    fig = plt.figure(figsize=[8, 6])
+    grid = plt.GridSpec(4, 1)
 
-    # vertical lines
-    lines = hma.x_keVs[hma.peak_idxs_list[n]]
-    ymin = twax.get_ylim()[0] #np.zeros_like(lines)
-    ymax = twax.get_ylim()[1] #* np.ones_like(lines)
+    ax_ptrns = fig.add_subplot(grid[0:3, 0])
+    ax_spectr = fig.add_subplot(grid[3, 0], sharex=ax_ptrns)
 
-    twax.vlines(lines, ymin, ymax, alpha=0.3)
+    # make subplots
+    ax = plot_patterns(elem_ptrns, instrument_pattern=instrum_ptrn, ax=ax_ptrns)
 
-    # spectrum
-    hma.plot_spectrum(n, footspace=0.5, ax=ax1, headspace=1)
+    hma = HotmaxAtlas(datastack_file)
+    hma.plot_spectrum(n, ax=ax_spectr, footspace=footspace)
 
-    plt.subplots_adjust(hspace=0.05)
+    ax_spectr.set_xlabel('Energy (keV)')
 
-    return ax0, ax1
+    plt.tight_layout()
+
+    return ax_ptrns, ax_spectr
+
 
 
 def get_instrument_pattern(datastack_file):
