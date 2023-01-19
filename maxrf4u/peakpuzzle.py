@@ -8,6 +8,8 @@ __all__ = ['get_patterns', 'colorize', 'plot_ptrn', 'plot_patterns', 'plot_puzzl
 import maxrf4u
 
 from maxrf4u import HotmaxAtlas
+#from maxrf4u import eoi, get_patterns, get_instrument_pattern, plot_patterns
+from .peakmaps import _add_hotlines_ticklabels
 
 
 import re
@@ -34,8 +36,6 @@ eoi = [e for e in all_elements if not '#' in e]
 
 def get_patterns(elements, tube_keV=30, eoi=None):
     '''Returns sorted pattern dict list for `elements` list, according to alpha peak energy. '''
-
-
 
     ptrn_dict_list = []
 
@@ -194,7 +194,7 @@ def plot_patterns(ptrn_list, instrument_pattern=None, datastack_file=None, ax=No
 
     ax.set_ylim([-1, n_ticks])
 
-    plt.tight_layout()
+    #plt.tight_layout()
 
     return ax
 
@@ -210,23 +210,36 @@ def plot_puzzle(datastack_file, n, elements=None, footspace=0.2):
     instrum_ptrn = get_instrument_pattern(datastack_file)
 
     # prepare figure
-    fig = plt.figure(figsize=[8, 6])
-    grid = plt.GridSpec(4, 1)
+    n_ptrns = len(elements) + 1
+    n_grid_rows = n_ptrns + 12
 
-    ax_ptrns = fig.add_subplot(grid[0:3, 0])
-    ax_spectr = fig.add_subplot(grid[3, 0], sharex=ax_ptrns)
+    fig_width = 8
+    fig_height = fig_width * n_grid_rows / 50
+
+    fig = plt.figure(figsize=[fig_width, fig_height], constrained_layout=True)
+    grid = plt.GridSpec(n_grid_rows, 1, hspace=16)
+
+    ax_ptrns = fig.add_subplot(grid[0:n_ptrns, 0], xticklabels=[])
+    ax_spectr = fig.add_subplot(grid[n_ptrns+1:, 0], sharex=ax_ptrns)
+
+    # hack to suppress ticklabels in upper plot
+    # https://stackoverflow.com/questions/4209467
+    # matplotlib-share-x-axis-but-dont-show-x-axis-tick-labels-for-both-just-one
+    plt.setp(ax_ptrns.get_xticklabels(), visible=False)
 
     # make subplots
     ax = plot_patterns(elem_ptrns, instrument_pattern=instrum_ptrn, ax=ax_ptrns)
 
     hma = HotmaxAtlas(datastack_file)
-    hma.plot_spectrum(n, ax=ax_spectr, footspace=footspace)
+    hma.plot_spectrum(n, ax=ax_spectr, footspace=footspace, hotlines_ticklabels=False, headspace=1.3)
 
     ax_spectr.set_xlabel('Energy (keV)')
 
-    plt.tight_layout()
+    # add tick labels explictly to avoid issues with panning
+    _add_hotlines_ticklabels('RP-T-1898-A-3689.datastack', ax_spectr)
+    _add_hotlines_ticklabels('RP-T-1898-A-3689.datastack', ax_ptrns, clip_vline=False)
 
-    return ax_ptrns, ax_spectr
+    return fig, ax_ptrns, ax_spectr
 
 
 

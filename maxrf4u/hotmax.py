@@ -87,7 +87,7 @@ class HotmaxAtlas():
 
 
     def plot_spectrum(self, n, ax=None, legend=False, headspace=1, footspace=0.1,
-                      hotlines_ticklabels=True):
+                      hotlines_ticklabels=True, tight_layout=False):
 
         if ax is None:
 
@@ -174,7 +174,8 @@ class HotmaxAtlas():
 
             twax.tick_params(color=[1, 0.5, 0.5], pad=0)
 
-        plt.tight_layout()
+        if tight_layout:
+            plt.tight_layout()
 
         return ax, ann_list
 
