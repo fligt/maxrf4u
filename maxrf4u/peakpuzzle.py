@@ -8,8 +8,9 @@ __all__ = ['get_patterns', 'colorize', 'plot_ptrn', 'plot_patterns', 'plot_puzzl
 import maxrf4u
 
 from maxrf4u import HotmaxAtlas
-#from maxrf4u import eoi, get_patterns, get_instrument_pattern, plot_patterns
 from .peakmaps import _add_hotlines_ticklabels
+
+from .xphysics import get_element_spectrum
 
 
 import re
@@ -34,10 +35,17 @@ all_elements = ['#H', '#He', '#Li', '#Be', '#B', '#C', 'N', 'O', 'F', 'Ne', 'Na'
 eoi = [e for e in all_elements if not '#' in e]
 
 
-def get_patterns(elements, tube_keV=30, eoi=None):
-    '''Returns sorted pattern dict list for `elements` list, according to alpha peak energy. '''
+def get_patterns(elements=None, tube_keV=30, color_select=None):
+    '''Returns pattern dict list for `elements` list, sorted according to alpha peak energy.
+
+    By default all elements are colored with a standard color. To colorize only specific elements,
+    provide a list of elements `color_select`.
+    '''
 
     ptrn_dict_list = []
+
+    if elements is None:
+        elements = eoi
 
     for elem in elements:
 
@@ -53,7 +61,17 @@ def get_patterns(elements, tube_keV=30, eoi=None):
 
         alpha_escape_keV = alpha_keV - 1.74  # Silicon detector escape energy shift
 
-        color = colorize(elem, eoi=eoi)
+        if color_select is None:
+            # all elements are colored
+            color = colorize(elem)
+        else:
+            if elem in color_select:
+                # only selected elements are colored
+                color = colorize(elem)
+            else:
+                # otherwise make black
+                color = [0, 0, 0]
+
 
         name = mendeleev.element(elem).name
 
@@ -73,22 +91,20 @@ def get_patterns(elements, tube_keV=30, eoi=None):
 
     return ptrn_list
 
-def colorize(elem, eoi=None):
+def colorize(elem):
     '''Pick fixed color from nice color map for elements of interest. '''
 
-    if eoi is None:
+    # select elements of interest
+    all_elements = ['#H', '#He', '#Li', '#Be', '#B', '#C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al',
+                    'Si', 'P', 'S', 'Cl', '#Ar', 'K', 'Ca', '#Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe',
+                    'Co', 'Ni', 'Cu', 'Zn', '#Ga', '#Ge', 'As', '#Se', 'Br', '#Kr', '#Rb', 'Sr',
+                    '#Y', '#Zr', '#Nb', '#Mo', '#Tc', '#Ru', 'Rh', '#Pd', 'Ag', 'Cd', '#In', 'Sn',
+                    '#Sb', '#Te', 'I', '#Xe', '#Cs', 'Ba', '#La', '#Hf', '#Ta', '#W', '#Re', '#Os',
+                    '#Ir', '#Pt', '#Au', 'Hg', '#Tl', 'Pb', '#Bi', '#Po', '#At', '#Rn', '#Fr', '#Ra',
+                    '#Ac', '#Rf', '#Db', '#Sg', '#Bh', '#Hs', '#Mt', '#Ds', '#Rg', '#Cn', '#Nh',
+                    '#Fl', '#Mc', '#Lv', '#Ts', '#Og']
 
-        # select elements of interest
-        all_elements = ['#H', '#He', '#Li', '#Be', '#B', '#C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al',
-                        'Si', 'P', 'S', 'Cl', '#Ar', 'K', 'Ca', '#Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe',
-                        'Co', 'Ni', 'Cu', 'Zn', '#Ga', '#Ge', 'As', '#Se', 'Br', '#Kr', '#Rb', 'Sr',
-                        '#Y', '#Zr', '#Nb', '#Mo', '#Tc', '#Ru', 'Rh', '#Pd', 'Ag', 'Cd', '#In', 'Sn',
-                        '#Sb', '#Te', 'I', '#Xe', '#Cs', 'Ba', '#La', '#Hf', '#Ta', '#W', '#Re', '#Os',
-                        '#Ir', '#Pt', '#Au', 'Hg', '#Tl', 'Pb', '#Bi', '#Po', '#At', '#Rn', '#Fr', '#Ra',
-                        '#Ac', '#Rf', '#Db', '#Sg', '#Bh', '#Hs', '#Mt', '#Ds', '#Rg', '#Cn', '#Nh',
-                        '#Fl', '#Mc', '#Lv', '#Ts', '#Og']
-
-        eoi = [e for e in all_elements if not '#' in e]
+    eoi = [e for e in all_elements if not '#' in e]
 
     # tab20x2 color map
     tab20 = cm.tab20(np.arange(20))[:,0:3]
@@ -116,10 +132,14 @@ def colorize(elem, eoi=None):
     return color
 
 
-def plot_ptrn(elem, y, ax, eoi=None, escape=True):
+def plot_ptrn(elem, y, ax, color_select=None):
     '''Low level plot element pattern at level `y` in axes `ax`.'''
 
-    ptrn = get_patterns([elem], eoi=eoi)[0]
+    ptrn = get_patterns([elem], color_select=color_select)[0]
+
+    # would like to include the theoretical emission spectrum as well
+    # or simply do gaussian convolve?
+    x, elem_spectrum = get_element_spectrum(elem, excitation_energy_keV=30)
 
     peaks_x, peaks_y = ptrn['peaks_xy'].T
     color = ptrn['color']
@@ -138,75 +158,94 @@ def plot_ptrn(elem, y, ax, eoi=None, escape=True):
 
     ax.scatter(peaks_x, y * ones, s=15, color=color)
     ax.plot([left_x, right_x], [y, y], color=color, alpha=0.3)
+
+
+    ax.fill_between(x, y + 0.8*elem_spectrum, y2=y, alpha=0.2, color=color,
+                    where=elem_spectrum>0.01) # emission spectrum
     ax.scatter(peaks_x[0], y, marker='s', s=40, color=color)
 
-    if escape is True:
-        ax.scatter(alpha_escape_keV, y, marker='|', s=15, color=color)
+    ax.scatter(alpha_escape_keV, y, marker='|', s=15, color=color)
 
     ax.annotate(ptrn['elem'], [right_x, y], xytext=[5, -1], fontsize=8, color=color,
                 textcoords='offset points', ha='left', va='center')
 
-
-
-
     return ptrn
 
 
-def plot_patterns(ptrn_list, instrument_pattern=None, datastack_file=None, ax=None, eoi=None, escape=True):
-    '''Plot overview of instrument and element patterns `ptrn_list` in axes `ax`
+def plot_patterns(elements=None, instr_ptrn_from_datastack_file=None, color_select=None, ax=None):
+    '''Wrapper function to plot overview of `element` and instrument patterns in axes `ax`.
 
     Returns: `ax`
     '''
 
-    elements = [p['elem'] for p in ptrn_list]
-    element_labels = [f'{mendeleev.element(e).name} ({e})' for e in elements]
+    if elements is None:
+        elements = eoi
 
-    # create plot
-    if ax is None:
-        fig, ax = plt.subplots(figsize=[9, 6])#0.5*n_ptrns])
+    ptrn_list = get_patterns(elements=elements, tube_keV=30, color_select=color_select)
+
+    # this should fix the alpha peak order tick label bug?
+    elements = [ptrn['elem'] for ptrn in ptrn_list]
+    element_labels = [f'{mendeleev.element(e).name} ({e})' for e in elements]
 
     n_ptrns = len(ptrn_list)
     n_ticks = n_ptrns
     offset = 0
     ytick_labels = element_labels
 
-    # plot instrument pattern X X X
+    if instr_ptrn_from_datastack_file is not None:
+        instrument_ptrn = get_instrument_pattern(instr_ptrn_from_datastack_file)
 
-    if instrument_pattern is not None:
         n_ticks += 1
         offset = 1
         ytick_labels = ['INSTRUMENT'] + ytick_labels
 
-        peaks = instrument_pattern['instrument_peaks']
+        instr_peaks = instrument_ptrn['instrument_peaks']
+        instr_zeros = np.zeros_like(instr_peaks)
 
-        zeros = np.zeros_like(peaks)
+    # now create plot
+    if ax is None:
+        fig_width = 9
+        fig_height = 0.15 * n_ticks + 0.5
+        fig, ax = plt.subplots(figsize=[fig_width, fig_height])
+        ax.set_xlabel('energy (keV)')
 
-        ax.scatter(peaks, zeros, marker='x', color='r')
+    # plot instrument pattern X X X
+
+    if instr_ptrn_from_datastack_file is not None:
+        ax.scatter(instr_peaks, instr_zeros, marker='x', color='r')
+
 
     # plot element patterns
 
     for i, ptrn in enumerate(ptrn_list):
 
-        plot_ptrn(ptrn['elem'], offset + i, ax, eoi=eoi, escape=escape)
+        #plot_ptrn(ptrn['elem'], y, ax, color_select=color_select)
+
+        plot_ptrn(ptrn['elem'], offset + i, ax, color_select=color_select)
 
     ax.set_yticks(range(n_ticks))
     ax.set_yticklabels(ytick_labels, fontsize=8)
 
     ax.set_ylim([-1, n_ticks])
 
+
     #plt.tight_layout()
 
     return ax
 
 
-def plot_puzzle(datastack_file, n, elements=None, footspace=0.2):
-    '''Plot peak pattern puzzle with patterns and spectrum'''
+def plot_puzzle(datastack_file, n, elements=None, color_select=None, footspace=0.2):
+    '''Plot peak pattern puzzle for hotmax spectrum `n` with emission patterns.
+
+    If `elements` is specified, only plot patterns for those elements.
+
+    '''
 
     # generate patterns
     if elements is None:
         elements = eoi
 
-    elem_ptrns = get_patterns(elements)
+    elem_ptrns = get_patterns(elements=elements, color_select=color_select)
     instrum_ptrn = get_instrument_pattern(datastack_file)
 
     # prepare figure
@@ -214,12 +253,12 @@ def plot_puzzle(datastack_file, n, elements=None, footspace=0.2):
     n_grid_rows = n_ptrns + 12
 
     fig_width = 8
-    fig_height = fig_width * n_grid_rows / 50
+    fig_height = fig_width * n_grid_rows / 50 + 2
 
     fig = plt.figure(figsize=[fig_width, fig_height], constrained_layout=True)
     grid = plt.GridSpec(n_grid_rows, 1, hspace=16)
 
-    ax_ptrns = fig.add_subplot(grid[0:n_ptrns, 0], xticklabels=[])
+    ax_ptrns = fig.add_subplot(grid[0:n_ptrns, 0])# , xticklabels=[])
     ax_spectr = fig.add_subplot(grid[n_ptrns+1:, 0], sharex=ax_ptrns)
 
     # hack to suppress ticklabels in upper plot
@@ -228,7 +267,10 @@ def plot_puzzle(datastack_file, n, elements=None, footspace=0.2):
     plt.setp(ax_ptrns.get_xticklabels(), visible=False)
 
     # make subplots
-    ax = plot_patterns(elem_ptrns, instrument_pattern=instrum_ptrn, ax=ax_ptrns)
+    plot_patterns(elements=elements, color_select=color_select, instr_ptrn_from_datastack_file=datastack_file,
+                  ax=ax_ptrns)
+
+    #ax = plot_patterns(elem_ptrns, instrument_pattern=instrum_ptrn, ax=ax_ptrns)
 
     hma = HotmaxAtlas(datastack_file)
     hma.plot_spectrum(n, ax=ax_spectr, footspace=footspace, hotlines_ticklabels=False, headspace=1.3)
@@ -236,8 +278,8 @@ def plot_puzzle(datastack_file, n, elements=None, footspace=0.2):
     ax_spectr.set_xlabel('Energy (keV)')
 
     # add tick labels explictly to avoid issues with panning
-    _add_hotlines_ticklabels('RP-T-1898-A-3689.datastack', ax_spectr)
-    _add_hotlines_ticklabels('RP-T-1898-A-3689.datastack', ax_ptrns, clip_vline=False)
+    _add_hotlines_ticklabels(datastack_file, ax_spectr)
+    _add_hotlines_ticklabels(datastack_file, ax_ptrns, clip_vline=False)
 
     return fig, ax_ptrns, ax_spectr
 

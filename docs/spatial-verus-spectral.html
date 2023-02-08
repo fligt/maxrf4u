@@ -76,10 +76,10 @@ nb_path: "notebooks/30_spatial-verus-spectral.ipynb"
 
 
 
-<div id="2bcac4ac-d86b-428d-b6c0-7ea4fd9ef891"></div>
+<div id="5c63034c-4dde-42f8-a8eb-0674acf19e2c"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#2bcac4ac-d86b-428d-b6c0-7ea4fd9ef891');
+var element = $('#5c63034c-4dde-42f8-a8eb-0674acf19e2c');
 /* Put everything inside the global mpl namespace */
 /* global mpl */
 window.mpl = {};
@@ -1070,7 +1070,7 @@ if (IPython.notebook.kernel !== null) {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">FeKa_slice</span> <span class="o">=</span> <span class="n">cube</span><span class="p">[:,:,</span><span class="n">is_iron_Ka_band</span><span class="p">]</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span> <span class="c1"># load only this slice into memory </span>
-<span class="n">FeKa_map</span> <span class="o">=</span> <span class="n">FeKa_slice</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">60</span> <span class="c1"># number of channels in the Fe_Ka band </span>
+<span class="n">FeKa_map</span> <span class="o">=</span> <span class="n">FeKa_slice</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">60</span> <span class="c1"># average over number of channels in the Fe_Ka band </span>
 </pre></div>
 
     </div>
@@ -1109,10 +1109,10 @@ if (IPython.notebook.kernel !== null) {
 
 
 
-<div id="732efe01-ed68-4a78-8a12-9c334d5a27ee"></div>
+<div id="1ad7872c-25a0-44a6-bd9d-88f74ce76fbc"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#732efe01-ed68-4a78-8a12-9c334d5a27ee');
+var element = $('#1ad7872c-25a0-44a6-bd9d-88f74ce76fbc');
 /* Put everything inside the global mpl namespace */
 /* global mpl */
 window.mpl = {};
@@ -2321,10 +2321,10 @@ dst_points = [[24.7, 7.64], [1579.0, 10.2], [1563.8, 1666.0], [8.22, 1671.92]]
 
 
 
-<div id="ac5776f2-3bab-449d-80b8-49fcf6165f71"></div>
+<div id="4fb98335-d37f-4acf-b16c-d76c0c10ccb9"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#ac5776f2-3bab-449d-80b8-49fcf6165f71');
+var element = $('#4fb98335-d37f-4acf-b16c-d76c0c10ccb9');
 /* Put everything inside the global mpl namespace */
 /* global mpl */
 window.mpl = {};
@@ -3428,6 +3428,209 @@ Returns: xy_points</code></pre>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Issues">Issues<a class="anchor-link" href="#Issues"> </a></h2><ul>
+<li>Need a fast and user friendly way to inspect and improve and existing image registration. </li>
+<li>Add option to select base64 encoding or python matplotlib? </li>
+</ul>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">maxrf4u</span> <span class="kn">import</span> <span class="n">ImageRegistrationHelper</span><span class="p">,</span> <span class="n">DataStack</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">DataStack</span><span class="p">(</span><span class="s1">&#39;RP-T-1898-A-3689.datastack&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>RP-T-1898-A-3689.datastack:
+
+/
+ ├── compton_peak_energy (1,) float64
+ ├── compton_peak_i () int64
+ ├── compton_peak_i_ (1,) int64
+ ├── hotmax_baselines (24, 4096) float64
+ ├── hotmax_baselines_ (24, 4096) float64
+ ├── hotmax_baselines__ (24, 4096) float64
+ ├── hotmax_baselines___ (24, 4096) float64
+ ├── hotmax_baselines____ (24, 4096) float64
+ ├── hotmax_baselines_____ (24, 4096) float64
+ ├── hotmax_baselines______ (24, 4096) float64
+ ├── hotmax_baselines_______ (24, 4096) float64
+ ├── hotmax_baselines________ (24, 4096) float64
+ ├── hotmax_baselines_________ (24, 4096) float64
+ ├── hotmax_baselines__________ (24, 4096) float64
+ ├── hotmax_baselines___________ (24, 4096) float64
+ ├── hotmax_baselines____________ (24, 4096) float64
+ ├── hotmax_baselines_____________ (24, 4096) float64
+ ├── hotmax_baselines______________ (24, 4096) float64
+ ├── hotmax_mask (22, 4096) bool
+ ├── hotmax_mask_ (22, 4096) bool
+ ├── hotmax_mask__ (22, 4096) bool
+ ├── hotmax_noiselines (24, 4096) float64
+ ├── hotmax_noiselines_ (24, 4096) float64
+ ├── hotmax_noiselines__ (24, 4096) float64
+ ├── hotmax_noiselines___ (24, 4096) float64
+ ├── hotmax_noiselines____ (24, 4096) float64
+ ├── hotmax_noiselines_____ (24, 4096) float64
+ ├── hotmax_noiselines______ (24, 4096) float64
+ ├── hotmax_noiselines_______ (24, 4096) float64
+ ├── hotmax_noiselines________ (24, 4096) float64
+ ├── hotmax_noiselines_________ (24, 4096) float64
+ ├── hotmax_noiselines__________ (24, 4096) float64
+ ├── hotmax_noiselines___________ (24, 4096) float64
+ ├── hotmax_noiselines____________ (24, 4096) float64
+ ├── hotmax_pixels (24, 3) int64
+ ├── hotmax_pixels_ (24, 3) int64
+ ├── hotmax_pixels__ (24, 3) int64
+ ├── hotmax_pixels___ (24, 3) int64
+ ├── hotmax_pixels____ (24, 3) int64
+ ├── hotmax_spectra (24, 4096) float32
+ ├── hotmax_spectra_ (24, 4096) float32
+ ├── hotmax_spectra__ (24, 4096) float32
+ ├── hotmax_spectra___ (24, 4096) float32
+ ├── hotmax_spectra____ (24, 4096) float32
+ ├── hotmax_spectra_____ (22, 4096) float32
+ ├── hotmax_spectra______ (22, 4096) float32
+ ├── hotmax_spectra_______ (22, 4096) float32
+ ├── hotmax_spots (22, 2) int64
+ ├── hotmax_spots_ (22, 2) int64
+ ├── hotmax_spots__ (22, 2) int64
+ ├── im_vis_extent (4,) int64
+ ├── im_vis_extent_ (4,) int64
+ ├── im_vis_extent__ (4,) int64
+ ├── im_vis_reg (1692, 1592, 4) float32
+ ├── im_vis_reg_ (1692, 1592, 4) float32
+ ├── im_vis_reg__ (1692, 1592, 4) float32
+ ├── im_vis_reg___ (1692, 1592, 4) float32
+ ├── im_vis_reg_highres (4920, 4629, 4) float32
+ ├── im_vis_reg_highres_ (4920, 4629, 4) float32
+ ├── imvis_extent (4,) int64
+ ├── imvis_extent_ (4,) int64
+ ├── imvis_extent__ (4,) int64
+ ├── imvis_extent___ (4,) int64
+ ├── imvis_reg (1692, 1592, 4) float32
+ ├── imvis_reg_ (1692, 1592, 4) float32
+ ├── imvis_reg__ (1692, 1592, 4) float32
+ ├── imvis_reg___ (1692, 1592, 4) float32
+ ├── imvis_reg_highres (4920, 4629, 4) float32
+ ├── imvis_reg_highres_ (4920, 4629, 4) float32
+ ├── imvis_reg_highres__ (4920, 4629, 4) float32
+ ├── imvis_reg_highres___ (4920, 4629, 4) float32
+ ├── maxrf_cube (1692, 1592, 4096) float32
+ ├── maxrf_energies (4096,) float64
+ ├── maxrf_energies_ (4096,) float64
+ ├── maxrf_energies__ (4096,) float64
+ ├── maxrf_energies___ (4096,) float64
+ ├── maxrf_energies____ (4096,) float64
+ ├── maxrf_energies_____ (4096,) float64
+ ├── maxrf_energies______ (4096,) float64
+ ├── maxrf_energies_______ (4096,) float64
+ ├── maxrf_energies________ (4096,) float64
+ ├── maxrf_maxspectrum (4096,) float32
+ ├── maxrf_sumspectrum (4096,) float64
+ ├── nmf_elementmaps (11, 1692, 1592) float32
+ ├── nmf_elementmaps_ (11, 1692, 1592) float32
+ ├── nmf_elementmaps__ (11, 1692, 1592) float32
+ ├── nmf_elementmaps___ (11, 1692, 1592) float32
+ ├── nmf_elementmaps____ (11, 1692, 1592) float32
+ ├── nmf_elementmaps_____ (11, 1692, 1592) float32
+ ├── nmf_elementmaps______ (11, 1692, 1592) float32
+ ├── nmf_elementmaps_______ (11, 1692, 1592) float32
+ ├── nmf_elements (11,) &lt;U2
+ ├── nmf_elements_ (11,) &lt;U2
+ ├── nmf_elements__ (11,) &lt;U2
+ ├── nmf_elements___ (11,) &lt;U2
+ ├── nmf_elements____ (11,) &lt;U2
+ ├── nmf_elements_____ (11,) &lt;U2
+ ├── nmf_elements______ (11,) &lt;U2
+ ├── nmf_elements_______ (11,) &lt;U2
+ ├── nmf_gausscomponents (25, 4096) float32
+ ├── nmf_gausscomponents_ (25, 4096) float32
+ ├── nmf_peak2elements_matrix (11, 24) float32
+ ├── nmf_peak2elements_matrix_ (11, 24) float32
+ ├── nmf_peak2elements_matrix__ (11, 24) float32
+ ├── nmf_peakmaps (25, 1692, 1592) float32
+ ├── nmf_peakmaps_ (25, 1692, 1592) float32
+ ├── nmf_peaks2elements_matrix (11, 24) float32
+ ├── nmf_peaks2elements_matrix_ (11, 24) float32
+ └── nmf_peaks2elements_matrix__ (11, 24) float32
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">imreg</span> <span class="o">=</span> <span class="n">ImageRegistrationHelper</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
 
 </div>
     {% endraw %}

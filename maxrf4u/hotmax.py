@@ -27,9 +27,10 @@ class HotmaxAtlas():
 
         self.hotmax_pixels = ds.read('hotmax_pixels')
         self.hotmax_spectra = ds.read('hotmax_spectra')
-        self.submax_spectrum = np.max(self.hotmax_spectra, axis=0)
+        self.submax_spectrum = np.max(self.hotmax_spectra, axis=0) # max spectrum skeleton
         self.baselines = ds.read('hotmax_baselines')
         self.noiselines = ds.read('hotmax_noiselines')
+        self.hotmax_mask = ds.read('hotmax_mask')
 
         self.n_spectra = len(self.hotmax_spectra)
 
@@ -48,13 +49,15 @@ class HotmaxAtlas():
             peak_order = np.argsort(peak_heights)[::-1] # sort by peak height
             peak_idxs = peak_idxs[peak_order]
 
-            # correct peak positions due to baseline tilting
+            # hack to correct peak positions due to baseline tilting
             peak_idxs = _untilt(peak_idxs, y_hot, delta=5)
 
+            # NOT NECESSARY AND POSSIBLE WITH MULTIPLE HOTMAX PEAKS
+            # INSTEAD USING MASK
             # promote hotmax peak to first position in list
-            hotmax_i = self.hotmax_pixels[i, 2] # get channel index
-            peak_idxs.remove(hotmax_i) # remove from list
-            peak_idxs.insert(0, hotmax_i) # prepend
+            #hotmax_i = self.hotmax_pixels[i, 2] # get channel index
+            #peak_idxs.remove(hotmax_i) # remove from list
+            #peak_idxs.insert(0, hotmax_i) # prepend
 
             self.peak_idxs_list.append(peak_idxs)
 
@@ -74,13 +77,14 @@ class HotmaxAtlas():
         # add a list with hotslice indices
         # (hack because we reorder peaks in hotmax spectrum according to height)
 
-        keV_idxs = self.hotmax_pixels[:,2]
+        # NO LONGER POSSIBLE NOR NEEDED
+        #keV_idxs = self.hotmax_pixels[:,2]
 
-        self.hotslice_idxs = []
+        #self.hotslice_idxs = []
 
-        for n, peak_idxs in enumerate(self.peak_idxs_list):
+        #for n, peak_idxs in enumerate(self.peak_idxs_list):
 
-             self.hotslice_idxs.append(peak_idxs.index(keV_idxs[n]))
+        #     self.hotslice_idxs.append(peak_idxs.index(keV_idxs[n]))
 
 
 
@@ -93,7 +97,8 @@ class HotmaxAtlas():
 
             fig, ax = plt.subplots(figsize=[9, 3])
 
-        hmp_i = self.hotmax_pixels[n, 2]
+        # NO LONGER
+        #hmp_i = self.hotmax_pixels[n, 2]
 
         # the hotmax spectrum
         ax.plot(self.x_keVs, self.hotmax_spectra[n],
@@ -112,9 +117,14 @@ class HotmaxAtlas():
                         where=self.hotmax_spectra[n] > self.noiselines[n],
                         color='b', alpha=0.5, zorder=8-30, label='max spectrum')
 
+        # NEED DIFFERENT CODE
         # the hotmax pixel peak (square marker)
-        hmp_x = self.x_keVs[hmp_i]
-        hmp_y = self.hotmax_spectra[n, hmp_i]
+        #hmp_x = self.x_keVs[hmp_i]
+        #hmp_y = self.hotmax_spectra[n, hmp_i]
+        #ax.scatter(hmp_x, hmp_y, marker='s', zorder=1, edgecolor='r',
+        #           facecolor='w', label=f'hotmax peak #{n}')
+        hmp_x = self.x_keVs[self.hotmax_mask[n]]
+        hmp_y = self.hotmax_spectra[n][self.hotmax_mask[n]]
         ax.scatter(hmp_x, hmp_y, marker='s', zorder=1, edgecolor='r',
                    facecolor='w', label=f'hotmax peak #{n}')
 
@@ -150,6 +160,7 @@ class HotmaxAtlas():
         # label
         ax.text(0.995, 0.98, f'#{n}', c='grey', ha='right', va='top', transform=ax.transAxes)
 
+
         # plot lines in pattern overview for all hotmax peaks
         lines_x = self.x_keVs[self.hotmax_pixels[:, 2]]
         ax.vlines(lines_x, ymin=0, ymax=2*ymax*headspace, color='r', alpha=0.2, zorder=9-30)
@@ -160,6 +171,7 @@ class HotmaxAtlas():
             ax.set_xlabel('energy [keV]')
             ax.set_ylabel('Intensity [#counts]')
             ax.legend()
+
 
         # add hotlines ticklabels
         if hotlines_ticklabels:
@@ -213,6 +225,7 @@ class HotmaxAtlas():
             return SVG('plot.svg')
 
 
+
 def compute_hotmax_spectra(datastack_file, prominence=0.35):
     '''Collect hotmax pixels and corresponding spectra from *datastack_file*.
 
@@ -232,7 +245,6 @@ def compute_hotmax_spectra(datastack_file, prominence=0.35):
     # plot max spectrum with peaks
 
     plt.close('all')
-
     plt.ion() # important for updating plots with fig.canvas.draw()
 
     fig, ax = plt.subplots(figsize=[9, 4])
@@ -277,16 +289,26 @@ def compute_hotmax_spectra(datastack_file, prominence=0.35):
 
     hot_pixels = np.array(hot_pixels)
 
+    # need to deduplicate identical spectra
+
+    n_channels = len(x_keVs)
+    hotmax_spots, hotmax_mask = _group_superimposed(hot_pixels, n_channels)
+
+
     # read spectrum for each hot max pixel
-    hot_spectra = []
-    for n, [i, j, _] in enumerate(hot_pixels):
-        print(f'Step 3/3: Reading hot max spectrum {n}/{len(hot_pixels) - 1}...', end='\r')
+    hotmax_spectra = []
+    for n, [i, j] in enumerate(hotmax_spots):
+        print(f'Step 3/3: Reading hot max spectrum {n}/{len(hotmax_spots) - 1}...', end='\r')
         spectrum = ds.maxrf_cube[i,j,:].compute()
-        hot_spectra.append(spectrum)
+        hotmax_spectra.append(spectrum)
 
         ax.plot(x_keVs, spectrum, color='b', linewidth=0.5, alpha=0.5)
         ax.fill_between(x_keVs, spectrum, color='b', linewidth=0.5, alpha=0.3)
-        ax.scatter(peaks_x[n], peaks_y[n], facecolor='b', edgecolor='r')
+        # NOT GOOD need mask now
+
+        x = x_keVs[hotmax_mask[n]]
+        y = spectrum[hotmax_mask[n]]
+        ax.scatter(x, y, facecolor='b', edgecolor='r')
 
         # force updating plot
         plt.pause(0.2)
@@ -295,14 +317,15 @@ def compute_hotmax_spectra(datastack_file, prominence=0.35):
 
     print(f'Step 3/3: Ready with reading hot max spectra. ')
 
-    hot_spectra = np.array(hot_spectra)
+    hotmax_spectra = np.array(hotmax_spectra)
 
     # user input
     write = input('Write hotmax spectra and pixels to datastack file [y/n]? ')
 
     if write == 'y':
-        maxrf4u.append(hot_spectra, ds.HOTMAX_SPECTRA, ds.datastack_file)
-        maxrf4u.append(hot_pixels, ds.HOTMAX_PIXELS, ds.datastack_file)
+        maxrf4u.append(hotmax_spectra, ds.HOTMAX_SPECTRA, ds.datastack_file)
+        maxrf4u.append(hotmax_spots, 'hotmax_spots', ds.datastack_file)
+        maxrf4u.append(hotmax_mask, 'hotmax_mask', ds.datastack_file)
 
         print(f'\nSaved hotmax data to: {ds.datastack_file}')
 
@@ -312,7 +335,6 @@ def compute_hotmax_spectra(datastack_file, prominence=0.35):
     fig.canvas.flush_events()
 
     return
-
 
 
 
@@ -423,3 +445,41 @@ def _untilt(peak_idxs, y_hot, delta=5):
         assert i in list(local_maxima), 'Peak adjustment error'
 
     return new_peak_idxs
+
+
+def _group_superimposed(hotmax_pixels, n_channels):
+    '''Group superimposed `hotmax_pixels`.
+
+    Returns: hotmax_spots, hotmax_mask '''
+
+    hotspots = hotmax_pixels[:,:2]
+    unique_hotspots = np.unique(hotspots, axis=0)
+
+    # create ragged sorted list of indices
+    indices_list = []
+
+    for u in unique_hotspots:
+        is_spot = np.all(hotspots == u, axis=1)
+        indices = np.arange(len(hotspots))[is_spot].tolist()
+        indices_list.append(indices)
+
+    first_indices = [idxs[0] for idxs in indices_list]
+
+    # sort
+    sorting = np.argsort(first_indices)
+    ragged_indices = [indices_list[s] for s in sorting]
+
+    # create corresponding list hotspots
+    hotmax_spots = np.array([hotmax_pixels[idxs[0]][0:2] for idxs in ragged_indices])
+
+
+    # creat mask
+    n_hotspots = len(hotmax_spots)
+    shape = [n_hotspots, n_channels]
+    hotmax_mask = np.zeros(shape, dtype=bool)
+
+    for i, idxs in enumerate(ragged_indices):
+        peak_idxs = hotmax_pixels[idxs][:, 2]
+        hotmax_mask[i][peak_idxs] = True
+
+    return hotmax_spots, hotmax_mask
