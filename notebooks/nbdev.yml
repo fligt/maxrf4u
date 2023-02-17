@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "maxrf4u"
+  site-url: "https://fligt.github.io/maxrf4u"
+  description: "Explore your X-Ray Fluorescence spectral images"
+  repo-branch: main
+  repo-url: "https://github.com/fligt/maxrf4u"

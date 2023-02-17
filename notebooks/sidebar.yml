@@ -1,0 +1,14 @@
+website:
+  sidebar:
+    contents:
+      - index.ipynb
+      - 00_suzanna.ipynb
+      - 10_storage.ipynb
+      - 20_calibration.ipynb
+      - 30_spatial-verus-spectral.ipynb
+      - 40_hotmax.ipynb
+      - 50_peak-pattern-puzzle.ipynb
+      - 55_peak-pattern-puzzle-solver.ipynb
+      - 60_peakmaps.ipynb
+      - 90_xphysics.ipynb
+      - 91_interactive-plotting.ipynb
