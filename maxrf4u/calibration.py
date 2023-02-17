@@ -11,8 +11,7 @@ import scipy.signal as ssg
 import matplotlib.cm as cm 
 import math
 
-#|export 
-
+# %% ../notebooks/20_calibration.ipynb 14
 RHODIUM_Ka = 20.210105052526263 # Rh_KL3 
 IRON_Ka = 6.4032016008004 # Fe_KL3 
 

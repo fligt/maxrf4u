@@ -4,7 +4,7 @@
 __all__ = ['get_continuum', 'get_gaussians', 'fit_spectrum', 'get_spectral_slices', 'compute_nmf_peakmaps', 'multi_plot',
            'compute_nmf_element_maps']
 
-# %% ../notebooks/60_peakmaps.ipynb 29
+# %% ../notebooks/60_peakmaps.ipynb 30
 from dask import delayed 
 from dask.diagnostics import ProgressBar 
 import maxrf4u 
@@ -16,7 +16,7 @@ from IPython.display import SVG
 
 import sklearn.decomposition as skd 
 
-# %% ../notebooks/60_peakmaps.ipynb 30
+# %% ../notebooks/60_peakmaps.ipynb 31
 def get_continuum(datastack_file): 
     '''Compute continuum baseline from sum spectrum.
     

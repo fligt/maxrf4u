@@ -4,7 +4,7 @@
 __all__ = ['all_elements', 'eoi', 'get_patterns', 'colorize', 'plot_ptrn', 'plot_patterns', 'plot_puzzle',
            'get_instrument_pattern', 'add_hotlines']
 
-# %% ../notebooks/50_peak-pattern-puzzle.ipynb 49
+# %% ../notebooks/50_peak-pattern-puzzle.ipynb 50
 import maxrf4u  
 
 from . import HotmaxAtlas   
@@ -20,7 +20,7 @@ import mendeleev
 import moseley as mos
 import numpy as np 
 
-# %% ../notebooks/50_peak-pattern-puzzle.ipynb 50
+# %% ../notebooks/50_peak-pattern-puzzle.ipynb 51
 # all elements 
 all_elements = ['#H', '#He', '#Li', '#Be', '#B', '#C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 
                 'Si', 'P', 'S', 'Cl', '#Ar', 'K', 'Ca', '#Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 
