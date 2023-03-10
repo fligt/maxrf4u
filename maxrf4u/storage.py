@@ -171,7 +171,7 @@ def repack(datastack_file, select='all', overwrite=True, verbose=False):
     datapath_list = sorted(root)  
     
     # select newest version (most underscores) for all datasets
-    if select is 'all': 
+    if select == 'all': 
         selected = sorted(set([underscorify(dp, datapath_list, extra_underscore=False) for dp in datapath_list])) 
     # select newest version (most underscores) for datasets in select
     else: 
