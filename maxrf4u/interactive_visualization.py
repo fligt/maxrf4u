@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['UploadDir', 'make_filenames', 'make_gridbox_widget']
 
-# %% ../notebooks/91_interactive-plotting.ipynb 26
+# %% ../notebooks/91_interactive-plotting.ipynb 25
 import json 
 import os 
 
@@ -27,7 +27,7 @@ import urllib
 import numpy as np 
 import matplotlib.pyplot as plt
 
-# %% ../notebooks/91_interactive-plotting.ipynb 27
+# %% ../notebooks/91_interactive-plotting.ipynb 26
 class UploadDir(): 
     
     def __init__(self, mount_dir, objnr, bucket_url, subdir='images'):

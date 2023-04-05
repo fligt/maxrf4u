@@ -91,6 +91,7 @@ def get_patterns(elements=None, tube_keV=30, color_select=None):
         
     return ptrn_list  
 
+
 def colorize(elem): 
     '''Pick fixed color from nice color map for elements of interest. '''
     

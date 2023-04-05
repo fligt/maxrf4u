@@ -11,4 +11,22 @@ website:
       - 55_peak-pattern-puzzle-solver.ipynb
       - 60_peakmaps.ipynb
       - 90_xphysics.ipynb
-      - 91_interactive-plotting.ipynb
+      - nbdev.yml
+      - sidebar.yml
+      - styles.css
+      - section: images
+        contents:
+          - images/RP-T-1898-A-3689_emap-Ba.png
+          - images/RP-T-1898-A-3689_emap-Ca.png
+          - images/RP-T-1898-A-3689_emap-Cl.png
+          - images/RP-T-1898-A-3689_emap-Cu.png
+          - images/RP-T-1898-A-3689_emap-Fe.png
+          - images/RP-T-1898-A-3689_emap-K.png
+          - images/RP-T-1898-A-3689_emap-Mn.png
+          - images/RP-T-1898-A-3689_emap-Pb.png
+          - images/RP-T-1898-A-3689_emap-S.png
+          - images/RP-T-1898-A-3689_emap-Ti.png
+          - images/RP-T-1898-A-3689_emap-Zn.png
+          - images/animation-ImageRegistrationHelper.gif
+          - images/imreg-screenshot.png
+          - images/sulphur_histeq.png

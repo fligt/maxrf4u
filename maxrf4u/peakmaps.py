@@ -66,7 +66,7 @@ def _fit_gaussian(x, y, peak_idx, rel_height=0.2, baseline=None):
     
     dx = sorted([dx_left, dx_right])[0] 
     
-    # create baseline  
+    # create baseline if None   
     if baseline is None:  
         baseline = np.zeros_like(y) 
         
@@ -86,37 +86,39 @@ def _fit_gaussian(x, y, peak_idx, rel_height=0.2, baseline=None):
 
 def get_gaussians(datastack_file, tail_clip=0.05, norm=True): 
     '''Computes fitted Gaussian peak profiles for all hotmax pixels. 
-    
+
     Returns: y_gauss_list
     '''
-    
+
     # read stuff from datastack 
-    ds = maxrf4u.DataStack(datastack_file) 
+    ds = maxrf4u.DataStack('RP-T-1898-A-3689.datastack') 
 
     x_keVs = ds.read('maxrf_energies') 
-    hotmax_pixels = ds.read('hotmax_pixels')
+    #hotmax_pixels = ds.read('hotmax_pixels')
     hotmax_spectra = ds.read('hotmax_spectra')
     hotmax_baselines = ds.read('hotmax_baselines') 
-
-    peak_idxs = hotmax_pixels[:,2]
+    peak_idxs_list = ds.read_list('hotmax_peak_idxs_list')
 
     # get slices by fitting gaussian to corresponding hotmax spectrum and baseline 
     y_gauss_list = []
 
-    # Create tail clipped gaussians 
-    for i, peak_idx in enumerate(peak_idxs):  
+    # Create tail clipped gaussians for ragged peak indexes list 
+    for n, peak_idxs in enumerate(peak_idxs_list):  
 
-        y_hot = hotmax_spectra[i]
-        baseline = hotmax_baselines[i]
-        y_gauss_fit, baseline = _fit_gaussian(x_keVs, y_hot, peak_idx, baseline=baseline) 
+        y_hot = hotmax_spectra[n]
+        baseline = hotmax_baselines[n] 
 
-        y_gauss_flat =  y_gauss_fit - baseline 
-        
-        if norm is True: 
-            y_gauss_flat = y_gauss_flat / y_gauss_flat.max()
+        # iterate over (possibly multiple) peaks in each hotmax spectrum 
+        for idx in peak_idxs: 
+
+            y_gauss_fit, baseline = _fit_gaussian(x_keVs, y_hot, idx, baseline=baseline) 
+            y_gauss_flat =  y_gauss_fit - baseline 
+
+            if norm is True: 
+                y_gauss_flat = y_gauss_flat / y_gauss_flat.max()
+
+            y_gauss_list.append(y_gauss_flat)
             
-        y_gauss_list.append(y_gauss_flat)
-        
     return y_gauss_list 
 
 
