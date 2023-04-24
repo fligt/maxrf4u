@@ -15,7 +15,7 @@ import math
 RHODIUM_Ka = 20.210105052526263 # Rh_KL3 
 IRON_Ka = 6.4032016008004 # Fe_KL3 
 
-def calibrate(datastack_file, anode='Rh', prominence=0.1): 
+def calibrate(datastack_file, anode='Rh', prominence=0.1, tube_keV=40): 
     '''Automatic two step energy energy calibration. 
     
     In step 1 a preliminary calibration is done assuming that the  
@@ -39,7 +39,7 @@ def calibrate(datastack_file, anode='Rh', prominence=0.1):
     
     # LOCATE INSTRUMENT PEAK INDICES IN SUM SPECTRUM 
     
-    left_peak_i, compton_peak_i, right_peak_i = find_instrument_peaks(y_sum) 
+    left_peak_i, compton_peak_i, right_peak_i = find_instrument_peaks(y_sum, tube_keV=tube_keV) 
     
     # STEP 1: PRELIMINARY SENSOR + ANODE CALIBRATION TO LOCATE IRON Fe_Ka PEAK  
     
@@ -164,7 +164,7 @@ def detector_angle(keV0, keV1):
     return theta 
 
 
-def find_instrument_peaks(y_sum, prominence=0.1):  
+def find_instrument_peaks(y_sum, prominence=0.1, tube_keV=40):  
     '''Locate key instrument peaks: 
     
               1) left hand sensor peak index  
@@ -173,29 +173,34 @@ def find_instrument_peaks(y_sum, prominence=0.1):
               
               in sum spectrum `y_sum`. 
     
-    Assumes anode material is rhodium, and Compton peak is second highest in sum spectrum.  
+    Assumes anode material is rhodium, and Compton peak energy is 
+    first peak below (uncalibrated) 20 keV, based on tube keV.     
     
     Returns: [left_peak_i, compton_peak_i, right_peak_i] 
     '''
     
-    # find peaks in sum spectrum 
+    # find all prominent peaks in sum spectrum 
     n_channels = len(y_sum) 
     x_indices = np.arange(n_channels)
     sum_peak_indices, shapes_dict = ssg.find_peaks(y_sum, prominence=prominence)
     
+    # Sensor peak 
     # assume sensor peak index is first peak index in list    
     left_peak_i = sum_peak_indices[0] 
     
-    # clean spectrum by clipping first 5% channels 
-    # that should remove the (typically highest) sensor peak  
-    # now assume highest peak in clean spectrum 
-    # is Compton scattering of anode Ka emission  
-    n_sensor = n_channels // 20
-    y_sum_clean = y_sum.copy()
-    y_sum_clean[0:n_sensor] = 0 
-
-    compton_peak_i = np.argmax(y_sum_clean) 
+    # Compton peak (new approach)
+    # assume that Compton peak is first peak below 20 keV 
+    # in `tube_keV` based uncalibrated spectrum 
+    # i.e. with energies ranging from 0 to `tube_keV` 
+     
+    x_approx_keVs = np.linspace(0, tube_keV, n_channels)
+    peak_approx_keVs = x_approx_keVs[sum_peak_indices] # approximate peak keVs from tube keV 
+    is_below20keV = peak_approx_keVs < 20 
     
+    i = np.argmax(peak_approx_keVs[is_below20keV]) # peak number 
+    compton_peak_i = sum_peak_indices[i]
+    
+    # Anode peak 
     # find anode peak channel index right next to Compton peak    
     right_peak_i = sum_peak_indices[list(sum_peak_indices).index(compton_peak_i) + 1] 
     
@@ -206,6 +211,8 @@ def find_instrument_peaks(y_sum, prominence=0.1):
 
 def compton_shift(keV_in, theta): 
     '''Compute Compton shift for photon energies `keV_in` and scatter angle `theta`. 
+    
+    Assuming single scattering. 
     
     Returns: keV_out'''
     
