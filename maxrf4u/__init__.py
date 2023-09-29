@@ -11,7 +11,7 @@ from .xphysics import *
 from .interactive_visualization import * 
 
 #from .segmentation import * 
-#from .speckles import * 
+from .speckles import * 
 
 #from .fingerprints import * 
 
