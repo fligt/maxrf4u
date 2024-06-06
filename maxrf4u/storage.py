@@ -11,7 +11,8 @@ import numpy as np
 import dask 
 import dask.array as da 
 from dask.diagnostics import ProgressBar 
-import dask_ndfilters 
+#import dask_ndfilters # obsolete 
+from dask_image.ndfilters import gaussian_filter
 import re 
 import os 
 import zarr 
@@ -55,7 +56,9 @@ L = Layers()
 def raw_to_datastack(raw_file, rpl_file, datastack_file=None, datapath=L.MAXRF_CUBE, verbose=True): 
     '''Convert Bruker Macro XRF (.raw) data file *raw_filename* and (.rpl) shape file *rpl_filename*.  
     
-    into a Zarr Zipstore datastack file (.datastack).'''
+    into a Zarr Zipstore datastack file (.datastack).''' 
+
+    print('Please wait while preparing data conversion...')
     
     # generate datastack filename from .raw 
     if datastack_file is None: 
@@ -75,15 +78,17 @@ def raw_to_datastack(raw_file, rpl_file, datastack_file=None, datapath=L.MAXRF_C
     shape = (height, width, depth)
     
     # create numpy memory map 
+    print('Creating memory map...')
     raw_mm = np.memmap(raw_file, dtype='uint16', mode='r', shape=(height, width, depth))[::-1, ::-1] 
 
     # initializing dask array 
     arr = da.from_array(raw_mm) 
     arr = arr.astype(np.float32)
+    
 
-    # schedule spectral gaussian smoothing computation 
-    smoothed = dask_ndfilters.gaussian_filter(arr, (0, 0, 7)) 
-
+    # schedule spectral gaussian smoothing computation  
+    smoothed = gaussian_filter(arr, (0, 0, 7)) 
+    
     # create and open an empty zip file
     zs = zarr.ZipStore(datastack_file, mode='w') 
     
@@ -225,13 +230,17 @@ def max_and_sum_spectra(datastack_file, datapath=L.MAXRF_CUBE):
     # initialize dask array 
     arr = da.from_array(root[datapath])
         
-    # flatten
-    h, w, d = arr.shape
-    arr_flat = arr.reshape([h*w, d]) 
-    
-    # schedule computations 
-    sum_spectrum = arr_flat.sum(axis=0)
-    max_spectrum = arr_flat.max(axis=0)
+    # flatten (better avoid)
+    h, w, d = arr.shape 
+    #flat_shape = h * w, d
+    #with dask.config.set(**{'array.slicing.split_large_chunks': True}):
+    #    arr_flat = arr.reshape(flat_shape) #, limit='128 MiB') 
+    #
+    ## schedule computations 
+    #sum_spectrum = arr_flat.sum(axis=0)
+    #max_spectrum = arr_flat.max(axis=0)
+    sum_spectrum = arr.sum(axis=(0, 1))
+    max_spectrum = arr.max(axis=(0, 1))
     
     # compute 
     print('Computing max spectrum...')
