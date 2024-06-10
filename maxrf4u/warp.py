@@ -16,11 +16,12 @@ from ipywidgets.embed import embed_minimal_html
   
 import io 
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 import numpy as np
 import base64 
 import skimage.transform as skt 
-import imageio 
-import skimage 
+import imageio.v2 as imageio 
+import skimage.transform as skt
 
 import numpy as np
 import cv2 
@@ -31,7 +32,6 @@ class ImageRegistrationHelper(object):
     
     def __init__(self, src_im, dst_im, src_points=None, dst_points=None, scale_down=True): 
         
-        #
          
         # image shapes 
         src_h, src_w = self.src_h, self.src_w = src_im.shape[0:2]
@@ -158,42 +158,40 @@ def _img_to_base64_url(img_data, max_width=None):
     
     Returns: url_string'''
         
-    try: 
-        # better than matplotlib use skimage.io.imread to avoid float64 explosion...
-        img = imageio.imread(img_data) # if img_data is an image file path 
-    except: 
-        img = img_data # otherwise assume img_data is an image like numpy array  
-        
-    shape = img.shape[0:2] # height and width only 
-    h, w = shape 
-    
+    #try: 
+    #    # better than matplotlib use skimage.io.imread to avoid float64 explosion...
+    #    img = imageio.imread(img_data) # if img_data is an image file path 
+    #except: 
+    #    img = img_data # otherwise assume img_data is an image like numpy array 
+    img = img_data 
+
     # rescaling image if width > max_width 
+    # TODO: better testing 
+    h, w = img.shape[0:2] 
     if max_width is not None:  
         if w > max_width:
-            scale = max_width / w  
-            img = skt.rescale(img, scale, multichannel=True) 
-            
-    # normalize 
-    img_norm = (img - img.min()) / img.ptp()
-    
-    # reduce colors to 256 levels to keep base64 string size minimal 
-    img_ubyte = skimage.util.img_as_ubyte(img_norm)
-    
-    # write to buffer 
+            scale = max_width / w 
+            # scalar image 
+            if img.ndim == 2: 
+                channel_axis = None
+            else: 
+                channel_axis = 2
+            img = skt.rescale(img, scale, channel_axis=channel_axis) #, multichannel=True) deprecated 
+    # apply color map if single channel image
+    sm = cm.ScalarMappable()
+    sm.set_clim(vmin=None, vmax=None)
+    rgba = sm.to_rgba(img, bytes=True)
+
+    # convert to base64 string via memory buffer 
     buff = io.BytesIO();
-    plt.imsave(buff, img_ubyte, format='png')
-   
-    
-    # convert to base64 string 
+    imageio.imsave(buff, rgba, format='png')
     base64_string = base64.b64encode(buff.getvalue()).decode("ascii")
     url_string = f'data:image/png;base64,{base64_string}' 
     
     # let's close buffer just in case
-    buff.close()
-    
- 
-    return url_string
+    buff.close() 
 
+    return url_string 
 
         
 def warp(im_src, im_dst, pts_src, pts_dst, keep_scale=True, rgba=True, alpha_color=[1, 0, 0]): 
