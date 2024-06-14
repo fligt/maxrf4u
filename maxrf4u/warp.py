@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['ImageRegistrationHelper', 'warp', 'xy_to_latlon', 'latlon_to_xy']
 
-# %% ../notebooks/30_spatial-verus-spectral.ipynb 36
+# %% ../notebooks/30_spatial-verus-spectral.ipynb 35
 from ipywidgets import Layout, HBox, VBox 
 #import ipywidgets 
 
@@ -26,7 +26,7 @@ import skimage.transform as skt
 import numpy as np
 import cv2 
 
-# %% ../notebooks/30_spatial-verus-spectral.ipynb 37
+# %% ../notebooks/30_spatial-verus-spectral.ipynb 36
 class ImageRegistrationHelper(object): 
     '''Create interactive image registration. '''
     
