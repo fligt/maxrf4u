@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['HotmaxAtlas', 'compute_hotmax_spectra', 'compute_hotmax_noise', 'compute_subpeaks']
 
-# %% ../notebooks/40_hotmax.ipynb 33
+# %% ../notebooks/40_hotmax.ipynb 35
 import maxrf4u 
 import scipy.signal as ssg 
 import numpy as np 
@@ -14,7 +14,7 @@ import scipy.ndimage.morphology as morph
 import scipy.interpolate as sip 
 from IPython.display import SVG 
 
-# %% ../notebooks/40_hotmax.ipynb 34
+# %% ../notebooks/40_hotmax.ipynb 36
 class HotmaxAtlas(): 
     
     def __init__(self, datastack_file, prominence=0.2): 
