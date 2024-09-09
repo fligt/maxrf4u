@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['HotmaxAtlas', 'compute_hotmax_spectra', 'compute_hotmax_noise', 'compute_subpeaks']
 
-# %% ../notebooks/40_hotmax.ipynb 35
+# %% ../notebooks/40_hotmax.ipynb 37
 import maxrf4u 
 import scipy.signal as ssg 
 import numpy as np 
@@ -14,7 +14,7 @@ import scipy.ndimage.morphology as morph
 import scipy.interpolate as sip 
 from IPython.display import SVG 
 
-# %% ../notebooks/40_hotmax.ipynb 36
+# %% ../notebooks/40_hotmax.ipynb 38
 class HotmaxAtlas(): 
     
     def __init__(self, datastack_file, prominence=0.2): 
@@ -194,22 +194,21 @@ def compute_hotmax_spectra(datastack_file, prominence=0.35):
     
     # plot max spectrum with peaks 
     
-    plt.close('all')
-    plt.ion() # important for updating plots with fig.canvas.draw() 
+    #plt.close('all')
+    #plt.ion() # important for updating plots with fig.canvas.draw() 
     
     fig, ax = plt.subplots(figsize=[9, 4])
 
-    fig.canvas.draw()   
+    #fig.canvas.draw()   
     ax.fill_between(x_keVs, y_max, color='r', alpha=0.3)
     ax.scatter(peaks_x, peaks_y, facecolor='w', edgecolor='r')  
     ax.set_xlim(peaks_x[0] - 0.5, peaks_x[-1] + 5) 
     ax.set_ylim(-5, 1.15 * np.max(peaks_y))
     
-    plt.pause(0.3) 
-    fig.canvas.draw() 
-    fig.canvas.flush_events()
+    #plt.pause(0.3) 
+    #fig.canvas.draw() 
+    #fig.canvas.flush_events()
     
-
     for i, peak_xy in enumerate(zip(peaks_x, peaks_y)): 
         ax.annotate(f'[{i}]', peak_xy, xytext=[0, 10], color='r', 
                         textcoords='offset points', ha='center')
@@ -218,9 +217,9 @@ def compute_hotmax_spectra(datastack_file, prominence=0.35):
     ax.set_title(f'Found {len(peak_indices)} peaks with prominence > {prominence}')
     ax.grid()
 
-    plt.pause(0.3) 
-    fig.canvas.draw() 
-    fig.canvas.flush_events()
+    #plt.pause(0.3) 
+    #fig.canvas.draw() 
+    #fig.canvas.flush_events()
  
     
     # read corresponding channel maps for all max peak indices 
@@ -264,9 +263,9 @@ def compute_hotmax_spectra(datastack_file, prominence=0.35):
         ax.scatter(x, y, facecolor='b', edgecolor='r') 
 
         # force updating plot 
-        plt.pause(0.2) 
-        fig.canvas.draw()
-        fig.canvas.flush_events()
+        #plt.pause(0.2) 
+        #fig.canvas.draw()
+        #fig.canvas.flush_events()
         
     print(f'Step 3/3: Ready with reading hot max spectra. ')
 
@@ -283,9 +282,9 @@ def compute_hotmax_spectra(datastack_file, prominence=0.35):
         print(f'\nSaved hotmax data to: {ds.datastack_file}')
         
     # force updating plot 
-    plt.pause(0.3) 
-    fig.canvas.draw()
-    fig.canvas.flush_events()
+    #plt.pause(0.3) 
+    #fig.canvas.draw()
+    #fig.canvas.flush_events()
     
     return  
 
