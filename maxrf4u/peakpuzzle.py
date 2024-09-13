@@ -278,7 +278,7 @@ def plot_puzzle(datastack_file, n, elements=None, color_select=None, footspace=0
 
     ax_spectr.set_xlabel('Energy (keV)')
     
-    # add tick labels explictly to avoid issues with panning 
+    # add tick labels explicitly to avoid issues with panning 
     _add_hotlines_ticklabels(datastack_file, ax_spectr)
     _add_hotlines_ticklabels(datastack_file, ax_ptrns, clip_vline=False)
     

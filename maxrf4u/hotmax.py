@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['HotmaxAtlas', 'compute_hotmax_spectra', 'compute_hotmax_noise', 'compute_subpeaks']
 
-# %% ../notebooks/40_hotmax.ipynb 37
+# %% ../notebooks/40_hotmax.ipynb 39
 import maxrf4u 
 import scipy.signal as ssg 
 import numpy as np 
@@ -14,18 +14,18 @@ import scipy.ndimage.morphology as morph
 import scipy.interpolate as sip 
 from IPython.display import SVG 
 
-# %% ../notebooks/40_hotmax.ipynb 38
+# %% ../notebooks/40_hotmax.ipynb 40
 class HotmaxAtlas(): 
     
     def __init__(self, datastack_file, prominence=0.2): 
+
+        # add datastack name as attribute 
+        self.datastack_file = datastack_file 
         
         # read from datastack file (arrays)
-        
         ds = maxrf4u.DataStack(datastack_file)
-        
         self.x_keVs = ds.read('maxrf_energies') 
         self.y_max = ds.read('maxrf_maxspectrum') 
-        self.hotmax_pixels = ds.read('hotmax_pixels')
         self.hotmax_spectra = ds.read('hotmax_spectra')
         self.baselines = ds.read('hotmax_baselines')
         self.noiselines = ds.read('hotmax_noiselines') 
@@ -34,24 +34,24 @@ class HotmaxAtlas():
         self.submax_spectrum = np.max(self.hotmax_spectra, axis=0) # core max spectrum
         
         # read from datastack file (ragged lists) 
-        
-        self.peak_idxs_list = ds.read_list('hotmax_peak_idxs_list')
-        self.subpeak_idxs_list = ds.read_list('hotmax_subpeak_idxs_list')  
+        self.hotmax_peak_idxs_list = ds.read_list('hotmax_peak_idxs_list')
+        self.hotmax_subpeak_idxs_list = ds.read_list('hotmax_subpeak_idxs_list')  
+
+        # flatten ragged hotmax peak indexes list 
+        self.hotmax_peak_idxs_flat = [] 
+        for idxs in self.hotmax_peak_idxs_list: 
+            self.hotmax_peak_idxs_flat.extend(idxs)
         
          
     def plot_spectrum(self, n, ax=None, legend=False, headspace=1, footspace=0.1, 
                       hotlines_ticklabels=True, tight_layout=False): 
         
         if ax is None: 
-
             fig, ax = plt.subplots(figsize=[9, 3])
-            
-        # NO LONGER 
-        #hmp_i = self.hotmax_pixels[n, 2] 
         
-        # the hotmax spectrum 
+        # hotmax spectrum 
         ax.plot(self.x_keVs, self.hotmax_spectra[n], 
-                zorder=-1, label=f'hotmax spectrum #{n}')
+                zorder=-1, label='hotmax spectrum')
         
         # maxspectrum 
         ax.fill_between(self.x_keVs, self.y_max, color='r', alpha=0.15, zorder=8-30, label='max spectrum')
@@ -59,36 +59,30 @@ class HotmaxAtlas():
         
         # noise envelope 
         ax.fill_between(self.x_keVs, self.baselines[n], self.noiselines[n], 
-                        color=[0.5, 0.5, 0.9], zorder=10-30, alpha=0.4, label='noise envelope')
+                        color=[0.5, 0.9, 0.5], zorder=10-30, alpha=0.5, label='Poisson noise envelope')
         
         # fill subpeaks 
         ax.fill_between(self.x_keVs, self.noiselines[n], self.hotmax_spectra[n], 
                         where=self.hotmax_spectra[n] > self.noiselines[n],
-                        color='b', alpha=0.5, zorder=8-30, label='max spectrum')
-   
-        # NEED DIFFERENT CODE 
-        # the hotmax pixel peak (square marker)
-        #hmp_x = self.x_keVs[hmp_i]
-        #hmp_y = self.hotmax_spectra[n, hmp_i]
-        #ax.scatter(hmp_x, hmp_y, marker='s', zorder=1, edgecolor='r', 
-        #           facecolor='w', label=f'hotmax peak #{n}')
-        
-        hmp_x = self.x_keVs[self.peak_idxs_list[n]]
-        hmp_y = self.hotmax_spectra[n][self.peak_idxs_list[n]]
-        ax.scatter(hmp_x, hmp_y, marker='s', zorder=1, edgecolor='r', 
-                   facecolor='w', label=f'hotmax peak #{n}') 
+                        color='b', alpha=0.5, zorder=8-30)
 
-        # submax peaks (round markers)
-        peaks_x = self.x_keVs[self.subpeak_idxs_list[n]]
-        peaks_y = self.hotmax_spectra[n, self.subpeak_idxs_list[n]]
-        ax.scatter(peaks_x, peaks_y, edgecolor='b', alpha=1, zorder=0, facecolor='w')
+        # hotmax peaks (red square markers)
+        hmp_x = self.x_keVs[self.hotmax_peak_idxs_list[n]]
+        hmp_y = self.hotmax_spectra[n][self.hotmax_peak_idxs_list[n]]
+        ax.scatter(hmp_x, hmp_y, marker='s', zorder=1, edgecolor='r', 
+                   facecolor='w', label='hotmax peak(s)') 
+
+        # (puzzle) sub peaks (round markers)
+        subpeaks_x = self.x_keVs[self.hotmax_subpeak_idxs_list[n]]
+        subpeaks_y = self.hotmax_spectra[n, self.hotmax_subpeak_idxs_list[n]]
+        ax.scatter(subpeaks_x, subpeaks_y, edgecolor='b', alpha=1, zorder=0, facecolor='w', label='puzzle peaks')
         
-        # annotate submax peaks 
-        peak_labels = [f'({i})' for i, _ in enumerate(self.subpeak_idxs_list[n])]
+        # annotate puzzle peaks 
+        subpeak_labels = [f'({i})' for i, _ in enumerate(self.hotmax_subpeak_idxs_list[n])]
         ann_list = []
-        for i, plabel in enumerate(peak_labels):  
-            peak_xy = peaks_x[i], peaks_y[i] 
-            ann = ax.annotate(plabel, peak_xy, xytext=[0, 10], color='b', 
+        for i, plabel in enumerate(subpeak_labels):  
+            subpeak_xy = subpeaks_x[i], subpeaks_y[i] 
+            ann = ax.annotate(plabel, subpeak_xy, xytext=[0, 10], color='b', 
                               textcoords='offset points', ha='center')
             ann_list.append(ann)
  
@@ -97,7 +91,8 @@ class HotmaxAtlas():
         ymax = 1.15 * self.hotmax_spectra[n].max() # add space for peak labels 
         ymin = -ymax / 5 
         ax.set_ylim(footspace * ymin, headspace * ymax)
-        xlim = self.x_keVs[max(self.hotmax_pixels[:, 2])] + 2
+        #xlim = self.x_keVs[max(self.hotmax_pixels[:, 2])] + 2
+        xlim = self.x_keVs[max(self.hotmax_peak_idxs_list)[0]] + 2
         ax.set_xlim(-1, xlim)
         
         # remove negative yticks from footspace  
@@ -107,34 +102,20 @@ class HotmaxAtlas():
         # again why ?? 
         ax.set_ylim(footspace * ymin, headspace * ymax)
         
-        # label 
-        ax.text(0.995, 0.98, f'#{n}', c='grey', ha='right', va='top', transform=ax.transAxes)
+        # plot text label 
+        ax.text(0.995, 0.96, f'#{n}', ha='right', va='top', transform=ax.transAxes)
         
-        
+        # NEED TO ADJUST TO RAGGED LIST 
         # plot lines in pattern overview for all hotmax peaks  
-        lines_x = self.x_keVs[self.hotmax_pixels[:, 2]]
+        lines_x = self.x_keVs[self.hotmax_peak_idxs_flat]
         ax.vlines(lines_x, ymin=0, ymax=2*ymax*headspace, color='r', alpha=0.2, zorder=9-30)
         
         
         # add legend and labels etcetera if standalone 
         if legend:    
-            ax.set_xlabel('energy [keV]')
+            ax.set_xlabel('Energy [keV]')
             ax.set_ylabel('Intensity [#counts]')
-            ax.legend() 
-        
-        
-        # add hotlines ticklabels 
-        if hotlines_ticklabels: 
-            x_keVs = self.x_keVs
-            hotmax_z = self.hotmax_pixels[:, 2]
-
-            #ax, _ = hma.plot_spectrum(10)
-            twax = ax.twiny()
-            twax.set_xlim(ax.get_xlim())
-            twax.set_xticks(x_keVs[hotmax_z])
-            twax.set_xticklabels(range(len(hotmax_z)), fontsize=6, color='r')
-
-            twax.tick_params(color=[1, 0.5, 0.5], pad=0)
+            ax.legend(loc='upper left', bbox_to_anchor=(1.01, 0.98)) 
         
         if tight_layout: 
             plt.tight_layout()
@@ -149,15 +130,16 @@ class HotmaxAtlas():
         
         fig, axs = plt.subplots(nrows=self.n_spectra, figsize=[9, self.n_spectra], sharex=True)
         
-        axs[0].set_title('hotmax spectra')
-        
-        xlim = self.x_keVs[max(self.hotmax_pixels[:, 2])] + 2
+        axs[0].set_title(f'Hotmax spectra')
+  
+        # set plot limits    
+        xlim = self.x_keVs[max(self.hotmax_peak_idxs_list)[0]] + 2
         
         for n, ax in enumerate(axs): 
-            self.plot_spectrum(n, ax=ax, hotlines_ticklabels=False)
+            self.plot_spectrum(n, ax=ax)
             
             # limits 
-            ylim = 1.3 * self.hotmax_spectra[n].max()
+            ylim = 1.5 * self.hotmax_spectra[n].max()
             ax.set_ylim(-1, ylim)
             ax.set_xlim(-1, xlim)
             #ax.text(0.95, 0.95, f'{n}', ha='right', va='top', transform=ax.transAxes)
