@@ -2,9 +2,9 @@
 
 # %% auto 0
 __all__ = ['DATASTACK_EXT', 'L', 'Layers', 'raw_to_datastack', 'tree', 'underscorify', 'append', 'append_list', 'repack',
-           'max_and_sum_spectra', 'DataStack']
+           'max_and_sum_spectra', 'make_raw_preview', 'DataStack']
 
-# %% ../notebooks/10_storage.ipynb 24
+# %% ../notebooks/10_storage.ipynb 29
 import maxrf4u
 
 import numpy as np 
@@ -21,8 +21,9 @@ import cv2
 import matplotlib.pyplot as plt 
 import scipy.signal as ssg 
 import time 
+import skimage as sk 
 
-# %% ../notebooks/10_storage.ipynb 25
+# %% ../notebooks/10_storage.ipynb 30
 # CONSTANTS 
 DATASTACK_EXT = '.datastack' 
 
@@ -53,7 +54,8 @@ L = Layers()
 
 # functions 
 
-def raw_to_datastack(raw_file, rpl_file, datastack_file=None, datapath=L.MAXRF_CUBE, verbose=True): 
+def raw_to_datastack(raw_file, rpl_file, datastack_file=None, datapath=L.MAXRF_CUBE, verbose=True, 
+                    flip_horizontal=False, flip_vertical=False): 
     '''Convert Bruker Macro XRF (.raw) data file *raw_filename* and (.rpl) shape file *rpl_filename*.  
     
     into a Zarr Zipstore datastack file (.datastack).''' 
@@ -77,9 +79,16 @@ def raw_to_datastack(raw_file, rpl_file, datastack_file=None, datapath=L.MAXRF_C
 
     shape = (height, width, depth)
     
-    # create numpy memory map 
+    # create numpy memory map with proper orientation 
+    v_stride = 1
+    h_stride = 1
+    if flip_vertical: 
+        v_stride = -1
+    if flip_horizontal:
+        h_stride = -1 
+    
     print('Creating memory map...')
-    raw_mm = np.memmap(raw_file, dtype='uint16', mode='r', shape=(height, width, depth))[::-1, ::-1] 
+    raw_mm = np.memmap(raw_file, dtype='uint16', mode='r', shape=(height, width, depth))[::v_stride, ::h_stride] 
 
     # initializing dask array 
     arr = da.from_array(raw_mm) 
@@ -253,6 +262,50 @@ def max_and_sum_spectra(datastack_file, datapath=L.MAXRF_CUBE):
     zs.close()
      
     return y_max, y_sum 
+
+
+def make_raw_preview(raw_file, rpl_file, show=False): 
+    '''
+    Create preview image of raw file to inspect scan orientation. 
+    '''
+
+    # read data cube shape from .rpl file 
+    with open(rpl_file, 'r') as fh: 
+        lines = fh.readlines()
+    
+    # get rid of spaces and newline characters 
+    keys_and_values = dict([re.sub(' |\n', '', l).split('\t') for l in lines]) 
+    
+    width = int(keys_and_values['width'])
+    height = int(keys_and_values['height'])
+    depth = int(keys_and_values['depth'])
+    
+    shape = (height, width, depth)
+    
+    # create numpy memory map 
+    raw_mm = np.memmap(raw_file, dtype='uint16', mode='r', shape=(height, width, depth)) #[::-1, ::-1] 
+    
+    # create max-spectrum 
+    raw_flat = raw_mm.reshape([-1, depth])
+    raw_max = np.max(raw_flat, axis=0)
+    
+    # locate highest peak 
+    max_peak_idx = np.argmax(raw_max)
+    
+    # integrate peak slice 
+    
+    max_peak_map = np.average(raw_mm[:,:,max_peak_idx-10:max_peak_idx+10], axis=2)
+    raw_preview = sk.exposure.equalize_hist(max_peak_map) 
+    
+    preview_fname = raw_file + '_preview.png'
+    print(f'Saving: {preview_fname}...')
+    plt.imsave(preview_fname, raw_preview) 
+
+    if show: 
+        fig, ax = plt.subplots()
+        ax.imshow(raw_preview)
+        ax.set_title(preview_fname)
+
 
 
         
