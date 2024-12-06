@@ -305,7 +305,7 @@ def get_instrument_pattern(datastack_file):
     keV1 = maxrf4u.RHODIUM_Ka 
     theta = maxrf4u.detector_angle(keV0, keV1) 
     
-    sensor_peak_idx = ds.read('hotmax_pixels')[0, 2]
+    sensor_peak_idx = ds.read_list('hotmax_pixels')[0][0]
     sensor_peak_keV = x_keVs[sensor_peak_idx]
     
 
