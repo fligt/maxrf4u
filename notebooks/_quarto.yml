@@ -17,9 +17,9 @@ website:
     search: true
     right: 
       - icon: github
-        href: "https://github.com/fligt/cronomaxrf"
+        href: "https://github.com/fligt/maxrf4u"
   sidebar:
     style: floating
-  page-footer: "2023 Rijkserfgoedlaboratorium Amsterdam"
+  page-footer: "2024 Rijkserfgoedlaboratorium Amsterdam | Made with nbdev"
 
 metadata-files: [nbdev.yml, sidebar.yml]

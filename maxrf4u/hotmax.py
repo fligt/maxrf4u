@@ -46,7 +46,7 @@ class HotmaxAtlas():
         
          
     def plot_spectrum(self, n, ax=None, legend=False, headspace=1, footspace=0.1, 
-                      hotlines_ticklabels=True, tight_layout=False): 
+                      hotlines_ticklabels=True, tight_layout=False, xlim_padding=2): 
         
         if ax is None: 
             fig, ax = plt.subplots(figsize=[9, 3])
@@ -93,9 +93,10 @@ class HotmaxAtlas():
         ymax = 1.15 * self.hotmax_spectra[n].max() # add space for peak labels 
         ymin = -ymax / 5 
         ax.set_ylim(footspace * ymin, headspace * ymax)
-        #xlim = self.x_keVs[max(self.hotmax_pixels[:, 2])] + 2
-        xlim = self.x_keVs[max(self.hotmax_peak_idxs_list)[0]] + 2
-        ax.set_xlim(-1, xlim)
+        
+        if xlim_padding != None: 
+            xlim = self.x_keVs[max(self.hotmax_peak_idxs_list)[0]] + xlim_padding
+            ax.set_xlim(-1, xlim)
         
         # remove negative yticks from footspace  
         yticks = ax.get_yticks()
