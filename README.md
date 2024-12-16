@@ -15,8 +15,10 @@ This package is developed out in the open. If you are interested you can
 follow my ideas under construction in this documentation and already try
 out the Jupyter
 [notebooks](https://github.com/fligt/maxrf4u/tree/main/notebooks) in
-this repository. My goal is to make the package available for
-installation soon…
+this repository. Although this is **a-work-in-progress**, the package
+available for installation from the python package index:
+
+[![maxrf4u](https://badge.fury.io/py/maxrf4u.svg)](https://pypi.org/project/maxrf4u/)
 
 Frank Ligterink
 
