@@ -15,6 +15,7 @@ from dask.diagnostics import ProgressBar
 import scipy.ndimage.morphology as morph 
 import scipy.interpolate as sip 
 from IPython.display import SVG 
+from itertools import chain 
 
 # %% ../notebooks/40_hotmax.ipynb 40
 class HotmaxAtlas(): 
@@ -263,6 +264,10 @@ def compute_hotmax_spectra(datastack_file, prominence=0.35):
         maxrf4u.append(hotmax_spectra, ds.HOTMAX_SPECTRA, ds.datastack_file)
         maxrf4u.append(hotmax_spots, 'hotmax_spots', ds.datastack_file) 
         maxrf4u.append_list(hotmax_peak_idxs_list, 'hotmax_peak_idxs_list', ds.datastack_file) 
+
+        # also create a flat array of hotmax peak idxs  
+        maxrf4u.append(hot_pixels[:, 2], 'hotmax_peak_idxs_flat', ds.datastack_file)
+        
 
         print(f'\nSaved hotmax data to: {ds.datastack_file}')
         

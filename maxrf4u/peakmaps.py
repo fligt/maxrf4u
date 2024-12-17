@@ -6,7 +6,7 @@
 __all__ = ['get_continuum', 'get_gaussians', 'fit_spectrum_peaks', 'compute_nmf_peakmaps', 'multi_plot',
            'compute_nmf_element_maps']
 
-# %% ../notebooks/60_peakmaps.ipynb 29
+# %% ../notebooks/60_peakmaps.ipynb 31
 from dask import delayed 
 from dask.diagnostics import ProgressBar 
 import maxrf4u 
@@ -18,7 +18,7 @@ from IPython.display import SVG
 
 import sklearn.decomposition as skd 
 
-# %% ../notebooks/60_peakmaps.ipynb 30
+# %% ../notebooks/60_peakmaps.ipynb 32
 def get_continuum(datastack_file): 
     '''Compute continuum baseline from sum spectrum.
     
@@ -134,8 +134,8 @@ def fit_spectrum_peaks(y, datastack_file):
     X = y.reshape([1, -1]) # make single spectro into two dimenional array 
     
 
-    y_continuum = get_continuum('RP-T-1898-A-3689.datastack')
-    y_gauss_list = get_gaussians('RP-T-1898-A-3689.datastack', norm=False)
+    y_continuum = get_continuum(datastack_file)
+    y_gauss_list = get_gaussians(datastack_file, norm=False)
 
     # create component vectors 
     H = np.array([y_gauss for y_gauss in y_gauss_list]).astype(np.float32)
@@ -164,7 +164,7 @@ def _add_hotlines_ticklabels(datastack_file, ax, vlines=True, clip_vline=True):
     # read hotlines data 
     ds = maxrf4u.DataStack(datastack_file) 
     x_keVs = ds.read('maxrf_energies')
-    peak_idxs = ds.read('hotmax_pixels')[:, 2] 
+    peak_idxs = ds.read('hotmax_peak_idxs_flat') 
     
     secax = ax.secondary_xaxis('top')
 
