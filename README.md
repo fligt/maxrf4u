@@ -18,7 +18,7 @@ out the Jupyter
 this repository. Although this is **a-work-in-progress**, the package
 available for installation from the python package index:
 
-[![maxrf4u](https://badge.fury.io/py/maxrf4u.svg)](https://pypi.org/project/maxrf4u/)
+[![](https://badge.fury.io/py/maxrf4u.svg)](https://pypi.org/project/maxrf4u/)
 
 Frank Ligterink
 
