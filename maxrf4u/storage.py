@@ -54,17 +54,26 @@ L = Layers()
 
 # functions 
 
-def raw_to_datastack(raw_file, rpl_file, datastack_file=None, datapath=L.MAXRF_CUBE, verbose=True, 
+def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE, verbose=True, 
                     flip_horizontal=False, flip_vertical=False): 
     '''Convert Bruker Macro XRF (.raw) data file *raw_filename* and (.rpl) shape file *rpl_filename*.  
     
-    into a Zarr Zipstore datastack file (.datastack).''' 
+    into a Zarr Zipstore datastack file (.datastack).
+    ''' 
 
     print('Please wait while preparing data conversion...')
     
-    # generate datastack filename from .raw 
-    if datastack_file is None: 
-        datastack_file = re.sub('\.raw$', DATASTACK_EXT, raw_file) 
+    # generate datastack file path from raw_file and output_dir   
+    if output_dir is None: 
+        # save in same folder 
+        datastack_file = re.sub('\\.raw$', '', raw_file) + DATASTACK_EXT 
+        
+    else: 
+        # save in output folder 
+        assert os.path.exists(output_dir),  'Can not save to non-existing directory.'     
+        basename = os.path.basename(raw_file) 
+        basename = re.sub('\\.raw$', '', basename) + DATASTACK_EXT
+        datastack_file = os.path.join(output_dir, basename)
         
     # read data cube shape from .rpl file 
     with open(rpl_file, 'r') as fh: 
@@ -264,7 +273,7 @@ def max_and_sum_spectra(datastack_file, datapath=L.MAXRF_CUBE):
     return y_max, y_sum 
 
 
-def make_raw_preview(raw_file, rpl_file, show=False): 
+def make_raw_preview(raw_file, rpl_file, output_dir=None, show=False, save=True): 
     '''
     Create preview image of raw file to inspect scan orientation. 
     '''
@@ -292,21 +301,31 @@ def make_raw_preview(raw_file, rpl_file, show=False):
     # locate highest peak 
     max_peak_idx = np.argmax(raw_max)
     
-    # integrate peak slice 
-    
+    # integrate max peak slice 
     max_peak_map = np.average(raw_mm[:,:,max_peak_idx-10:max_peak_idx+10], axis=2)
     raw_preview = sk.exposure.equalize_hist(max_peak_map) 
-    
-    preview_fname = raw_file + '_preview.png'
-    print(f'Saving: {preview_fname}...')
-    plt.imsave(preview_fname, raw_preview) 
+
+    if output_dir is None: 
+        # save in same folder 
+        preview_file = raw_file + '_preview.png'
+        
+    else: 
+        # save in output folder 
+        assert os.path.exists(output_dir),  'Can not save to non-existing directory.'     
+        basename = os.path.basename(raw_file) 
+        basename = basename + '_preview.png'
+        preview_file = os.path.join(output_dir, basename)
+
+    if save: 
+        print(f'Saving: {preview_file}...')
+        plt.imsave(preview_file, raw_preview) 
 
     if show: 
         fig, ax = plt.subplots()
         ax.imshow(raw_preview)
         ax.set_title(preview_fname)
 
-
+    return raw_preview 
 
         
 class DataStack: 

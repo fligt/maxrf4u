@@ -309,6 +309,8 @@ def get_instrument_pattern(datastack_file):
     Returns: instrument_pattern_dict 
     
     '''
+
+    ARGON_Ka = 2.95647823911956
     
     ds = maxrf4u.DataStack(datastack_file) 
     
@@ -325,7 +327,7 @@ def get_instrument_pattern(datastack_file):
     keV_in = anode_emission.peak_energies
     keV_out = maxrf4u.compton_shift(keV_in, theta)
 
-    instrument_peaks = np.r_[sensor_peak_keV, keV_in, keV_out]
+    instrument_peaks = np.r_[sensor_peak_keV, keV_in, keV_out, ARGON_Ka]
     instrument_peaks = np.sort(instrument_peaks) 
     
     instrument_pattern_dict = {'name': 'INSTRUMENT', 
