@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['DATASTACK_EXT', 'L', 'Layers', 'raw_to_datastack', 'tree', 'underscorify', 'append', 'append_list', 'repack',
-           'max_and_sum_spectra', 'make_raw_preview', 'DataStack']
+           'max_and_sum_spectra', 'make_raw_preview', 'parse_rpl', 'DataStack']
 
 # %% ../notebooks/10_storage.ipynb 29
 import maxrf4u
@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 import scipy.signal as ssg 
 import time 
 import skimage as sk 
+from pathlib import Path
 
 # %% ../notebooks/10_storage.ipynb 30
 # CONSTANTS 
@@ -75,18 +76,8 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE,
         basename = re.sub('\\.raw$', '', basename) + DATASTACK_EXT
         datastack_file = os.path.join(output_dir, basename)
         
-    # read data cube shape from .rpl file 
-    with open(rpl_file, 'r') as fh: 
-        lines = fh.readlines()
-
-    # get rid of spaces and newline characters 
-    keys_and_values = dict([re.sub(' |\n', '', l).split('\t') for l in lines]) 
-
-    width = int(keys_and_values['width'])
-    height = int(keys_and_values['height'])
-    depth = int(keys_and_values['depth'])
-
-    shape = (height, width, depth)
+    # read data cube shape and dtype from .rpl file 
+    dtype, shape = parse_rpl(rpl_file, verbose=verbose)
     
     # create numpy memory map with proper orientation 
     v_stride = 1
@@ -97,13 +88,12 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE,
         h_stride = -1 
     
     print('Creating memory map...')
-    raw_mm = np.memmap(raw_file, dtype='uint16', mode='r', shape=(height, width, depth))[::v_stride, ::h_stride] 
+    raw_mm = np.memmap(raw_file, dtype=dtype, mode='r', shape=shape)[::v_stride, ::h_stride] 
 
     # initializing dask array 
     arr = da.from_array(raw_mm) 
     arr = arr.astype(np.float32)
     
-
     # schedule spectral gaussian smoothing computation  
     smoothed = gaussian_filter(arr, (0, 0, 7)) 
     
@@ -273,26 +263,16 @@ def max_and_sum_spectra(datastack_file, datapath=L.MAXRF_CUBE):
     return y_max, y_sum 
 
 
-def make_raw_preview(raw_file, rpl_file, output_dir=None, show=False, save=True): 
+def make_raw_preview(raw_file, rpl_file, output_dir=None, show=False, save=True, verbose=False): 
     '''
     Create preview image of raw file to inspect scan orientation. 
     '''
 
-    # read data cube shape from .rpl file 
-    with open(rpl_file, 'r') as fh: 
-        lines = fh.readlines()
-    
-    # get rid of spaces and newline characters 
-    keys_and_values = dict([re.sub(' |\n', '', l).split('\t') for l in lines]) 
-    
-    width = int(keys_and_values['width'])
-    height = int(keys_and_values['height'])
-    depth = int(keys_and_values['depth'])
-    
-    shape = (height, width, depth)
+    # read data cube shape and dtype from .rpl file
+    dtype, shape = parse_rpl(rpl_file, verbose=verbose)
     
     # create numpy memory map 
-    raw_mm = np.memmap(raw_file, dtype='uint16', mode='r', shape=(height, width, depth)) #[::-1, ::-1] 
+    raw_mm = np.memmap(Path(raw_file), dtype=dtype, mode='r', shape=shape)  
     
     # create max-spectrum 
     raw_flat = raw_mm.reshape([-1, depth])
@@ -323,11 +303,36 @@ def make_raw_preview(raw_file, rpl_file, output_dir=None, show=False, save=True)
     if show: 
         fig, ax = plt.subplots()
         ax.imshow(raw_preview)
-        ax.set_title(preview_fname)
+        ax.set_title(preview_file)
 
     return raw_preview 
 
-        
+def parse_rpl(rpl_file, verbose=False): 
+    '''Read .rpl shape file and return shape and dtype. '''
+
+    # read data cube shape from .rpl file 
+    with open(rpl_file, 'r') as fh: 
+        lines = fh.readlines()
+
+    if verbose: 
+        print(f'Parsing {rpl_file}: ')
+        for l in lines: 
+            print(l)
+    
+    # get rid of spaces and newline characters 
+    keys_and_values = dict([re.sub(' |\n', '', l).split('\t') for l in lines]) 
+    
+    width = int(keys_and_values['width'])
+    height = int(keys_and_values['height'])
+    depth = int(keys_and_values['depth']) 
+    nbytes = int(keys_and_values['data-Length'])
+
+    dtype = f'uint{nbytes*8}'
+    shape = (height, width, depth)   
+
+    return dtype, shape
+    
+
 class DataStack: 
         
     def __init__(self, datastack_file, mode='r', verbose=False, show_arrays=True): 
