@@ -275,7 +275,7 @@ def make_raw_preview(raw_file, rpl_file, output_dir=None, show=False, save=True,
     raw_mm = np.memmap(Path(raw_file), dtype=dtype, mode='r', shape=shape)  
     
     # create max-spectrum 
-    raw_flat = raw_mm.reshape([-1, depth])
+    raw_flat = raw_mm.reshape([-1, shape[2]])
     raw_max = np.max(raw_flat, axis=0)
     
     # locate highest peak 
