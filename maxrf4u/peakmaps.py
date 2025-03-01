@@ -218,10 +218,10 @@ def _get_spectral_slices(cube):
 
 
 
-def compute_nmf_peakmaps(datastack_file): 
+def compute_nmf_peakmaps(datastack_file, auto_write=False): 
     '''Use nonnegative matrix factorization to compute peak maps spectral data in `datastack_file`. 
-    
-    Asks to write result to datastack file. 
+
+    If option `auto_write` is false (default), ask user permission to write result to datastack file. 
     
     Returns: peak_maps 
     '''
@@ -269,9 +269,12 @@ def compute_nmf_peakmaps(datastack_file):
             n = n + 1
 
     peak_maps = peak_map_stack.transpose([2, 0, 1])
-    
-    # user input           
-    write = input('Write peak maps factorization to datastack file [y/n]? ')
+
+    if auto_write: 
+        write = 'y'
+    else: 
+        # user input           
+        write = input('Write peak maps factorization to datastack file [y/n]? ')
          
     if write == 'y': 
         maxrf4u.append(peak_maps, 'nmf_peakmaps', datastack_file)
@@ -341,7 +344,7 @@ def multi_plot(*images, hot_pixel=None, titles=None, roi_list=None, axis_off=Fal
     return fig, axs
 
 
-def compute_nmf_element_maps(datastack_file, elements_unsorted, excitation_energy_keV=25): 
+def compute_nmf_element_maps(datastack_file, elements_unsorted, excitation_energy_keV=25, auto_write=False): 
     '''Compute element maps for `elements` list. 
     
     Based on NMF factorization. Requires previously computed peak maps stored in `datastack_file`. 
@@ -396,9 +399,12 @@ def compute_nmf_element_maps(datastack_file, elements_unsorted, excitation_energ
     # Ok, unflatten and transpose again. 
 
     element_maps = W2.reshape([h, w, -1]).transpose([2, 0, 1])
-    
-    # user input           
-    write = input('Write NMF element maps and factorization data to datastack file [y/n]? ')
+
+    if auto_write: 
+        write = 'y'
+    else: 
+        # user input           
+        write = input('Write NMF element maps and factorization data to datastack file [y/n]? ')
          
     if write == 'y': 
         maxrf4u.append(element_maps, 'nmf_elementmaps', datastack_file)

@@ -162,7 +162,7 @@ class HotmaxAtlas():
 
         
         
-def compute_hotmax_spectra(datastack_file, prominence=0.35): 
+def compute_hotmax_spectra(datastack_file, prominence=0.35, auto_write=False): 
     '''Collect hotmax pixels and corresponding spectra from *datastack_file*. 
     
     Ask user confirmation for saving result to datastack file. 
@@ -256,10 +256,15 @@ def compute_hotmax_spectra(datastack_file, prominence=0.35):
     print(f'Step 3/3: Ready with reading hot max spectra. ')
 
     hotmax_spectra = np.array(hotmax_spectra)   
+
+    # override user confirmation 
+    if auto_write: 
+        write = 'y'
+    else: 
+        # user input           
+        write = input('Write hotmax spectra, spots and peak indices to datastack file [y/n]? ')
+
     
-    # user input           
-    write = input('Write hotmax spectra, spots and peak indices to datastack file [y/n]? ')
-         
     if write == 'y': 
         maxrf4u.append(hotmax_spectra, ds.HOTMAX_SPECTRA, ds.datastack_file)
         maxrf4u.append(hotmax_spots, 'hotmax_spots', ds.datastack_file) 
@@ -271,10 +276,6 @@ def compute_hotmax_spectra(datastack_file, prominence=0.35):
 
         print(f'\nSaved hotmax data to: {ds.datastack_file}')
         
-    # force updating plot 
-    #plt.pause(0.3) 
-    #fig.canvas.draw()
-    #fig.canvas.flush_events()
     
     return  
 
