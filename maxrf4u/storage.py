@@ -16,6 +16,7 @@ from dask_image.ndfilters import gaussian_filter
 import re 
 import os 
 import zarr 
+from zarr.storage import ZipStore 
 from IPython.display import HTML 
 import cv2
 import matplotlib.pyplot as plt 
@@ -98,7 +99,7 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE,
     smoothed = gaussian_filter(arr, (0, 0, 7)) 
     
     # create and open an empty zip file
-    zs = zarr.ZipStore(datastack_file, mode='w') 
+    zs = ZipStore(datastack_file, mode='w') 
     
     if verbose: 
         print(f'Writing: {datastack_file}...')
@@ -121,7 +122,7 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE,
 def tree(datastack_file, show_arrays=False): 
     '''Prints content tree of *datastack_file* '''
 
-    with zarr.ZipStore(datastack_file, mode='r') as zs: 
+    with ZipStore(datastack_file, mode='r') as zs: 
         root = zarr.group(store=zs) 
         tree = root.tree(expand=True).__repr__()
         print(f'{datastack_file}:\n\n{tree}')  
@@ -158,7 +159,7 @@ def append(arr, datapath, datastack_file):
     if not isinstance(arr, dask.array.Array):  
         arr = da.from_array(arr) 
             
-    with zarr.ZipStore(datastack_file, mode='a') as zs: 
+    with ZipStore(datastack_file, mode='a') as zs: 
         root = zarr.group(store=zs)
         
         # append underscores to make unique if datapath exists 
@@ -189,7 +190,7 @@ def repack(datastack_file, select='all', overwrite=True, verbose=False):
         tree(datastack_file)
     
     # open existing zipstore  
-    zs = zarr.ZipStore(datastack_file, mode='r') 
+    zs = ZipStore(datastack_file, mode='r') 
     root = zarr.group(store=zs)
     datapath_list = sorted(root)  
     
@@ -205,7 +206,7 @@ def repack(datastack_file, select='all', overwrite=True, verbose=False):
     
     # create and open new empty zipstore 
     datastack_file_new = datastack_file + '_temp'
-    zs_new = zarr.ZipStore(datastack_file_new, mode='w') 
+    zs_new = ZipStore(datastack_file_new, mode='w') 
     
     # copy selected datasets into new zipstore 
     with ProgressBar(): 
@@ -232,7 +233,7 @@ def max_and_sum_spectra(datastack_file, datapath=L.MAXRF_CUBE):
     Returns: *y_sum*, *y_max*'''
     
     # open existing zipstore  
-    zs = zarr.ZipStore(datastack_file, mode='r') 
+    zs = ZipStore(datastack_file, mode='r') 
     root = zarr.group(store=zs)
     
     # initialize dask array 
@@ -359,7 +360,7 @@ class DataStack:
     def update_attrs(self): 
         
         # populate store attributes 
-        self.store = zarr.ZipStore(self.datastack_file, mode=self.mode) 
+        self.store = ZipStore(self.datastack_file, mode=self.mode) 
         self.root = zarr.group(store=self.store) 
         
         # generic exposure to dask arrays 
