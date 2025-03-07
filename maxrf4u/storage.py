@@ -99,7 +99,7 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE,
     smoothed = gaussian_filter(arr, (0, 0, 7)) 
 
     # trying to fix error with irregular chunking 
-    smoothed.rechunk()
+    smoothed.rechunk(balance=True)
     # create and open an empty zip file
     zs = ZipStore(datastack_file, mode='w') 
     
