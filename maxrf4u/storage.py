@@ -122,8 +122,8 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE,
 def tree(datastack_file, show_arrays=False): 
     '''Prints content tree of *datastack_file* '''
 
-    with ZipStore(datastack_file, mode='r') as zs: 
-        root = zarr.group(store=zs) 
+    with ZipStore(datastack_file) as zs: 
+        root = zarr.open_group(store=zs, mode='r') 
         tree = root.tree(expand=True).__repr__()
         print(f'{datastack_file}:\n\n{tree}')  
         
@@ -159,8 +159,8 @@ def append(arr, datapath, datastack_file):
     if not isinstance(arr, dask.array.Array):  
         arr = da.from_array(arr) 
             
-    with ZipStore(datastack_file, mode='a') as zs: 
-        root = zarr.group(store=zs)
+    with ZipStore(datastack_file) as zs: 
+        root = zarr.open_group(store=zs, mode='a')
         
         # append underscores to make unique if datapath exists 
         datapath_list = sorted(root) 
@@ -190,8 +190,8 @@ def repack(datastack_file, select='all', overwrite=True, verbose=False):
         tree(datastack_file)
     
     # open existing zipstore  
-    zs = ZipStore(datastack_file, mode='r') 
-    root = zarr.group(store=zs)
+    zs = ZipStore(datastack_file) 
+    root = zarr.open_group(store=zs, mode='r')
     datapath_list = sorted(root)  
     
     # select newest version (most underscores) for all datasets
@@ -233,8 +233,8 @@ def max_and_sum_spectra(datastack_file, datapath=L.MAXRF_CUBE):
     Returns: *y_sum*, *y_max*'''
     
     # open existing zipstore  
-    zs = ZipStore(datastack_file, mode='r') 
-    root = zarr.group(store=zs)
+    zs = ZipStore(datastack_file) 
+    root = zarr.open_group(store=zs, mode='r')
     
     # initialize dask array 
     arr = da.from_array(root[datapath])
@@ -360,8 +360,8 @@ class DataStack:
     def update_attrs(self): 
         
         # populate store attributes 
-        self.store = ZipStore(self.datastack_file, mode=self.mode) 
-        self.root = zarr.group(store=self.store) 
+        self.store = ZipStore(self.datastack_file) 
+        self.root = zarr.open_group(store=self.store, mode=self.mode) 
         
         # generic exposure to dask arrays 
         self.datapath_list = sorted(self.root) 
