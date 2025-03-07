@@ -124,7 +124,7 @@ def tree(datastack_file, show_arrays=False):
 
     with ZipStore(datastack_file) as zs: 
         root = zarr.open_group(store=zs, mode='r') 
-        tree = root.tree(expand=True).__repr__()
+        tree = root.tree().__repr__() # removed expand=True for now 
         print(f'{datastack_file}:\n\n{tree}')  
         
         if show_arrays:        
@@ -159,15 +159,19 @@ def append(arr, datapath, datastack_file):
     if not isinstance(arr, dask.array.Array):  
         arr = da.from_array(arr) 
             
-    with ZipStore(datastack_file) as zs: 
-        root = zarr.open_group(store=zs, mode='a')
-        
-        # append underscores to make unique if datapath exists 
-        datapath_list = sorted(root) 
-        datapath = underscorify(datapath, datapath_list)
-        
-        # write      
-        arr.to_zarr(zs, component=datapath)
+    zs = ZipStore(datastack_file, mode='a')     
+    root = zarr.open_group(store=zs, mode='r')
+    
+    # append underscores to make unique if datapath exists 
+    datapath_list = sorted(root) 
+    datapath = underscorify(datapath, datapath_list)
+
+    # write to datastack 
+    zarr.create_array(store=zs, name=datapath, data=arr)
+    zs.close()
+
+    # old code using dask but not working      
+    #arr.to_zarr(zs, component=datapath)
 
         
 def append_list(ragged_list, datapath, datastack_file, nan=-9999): 
