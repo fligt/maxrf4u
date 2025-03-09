@@ -100,8 +100,8 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE,
 
     # trying to fix error with irregular chunking (not working)
     # smoothed.rechunk(balance=True) 
-    # therefore now trying with explicit chunk sizes 
-    smoothed.rechunk((100, 100, 100)) 
+    # therefore now trying with explicit chunk sizes (not working)
+    # smoothed.rechunk((100, 100, 100)) 
     
     # create and open an empty zip file
     zs = ZipStore(datastack_file, mode='w') 
@@ -110,10 +110,18 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE,
         print(f'Writing: {datastack_file}...')
 
     # compute and write maxrf data to zipstore 
+    # I hope that the progressbar still works with direct invocation of zarr
     with ProgressBar(): 
-        smoothed.to_zarr(zs, component=datapath) 
+
+        # depreciate dask.array.to_zarr() due to bugs... 
+        # smoothed.to_zarr(zs, component=datapath) 
+        
+        # instead directly use zarr.create_array
+        zarr.create_array(store=zs, name=datapath, data=smoothed)
         
     zs.close()
+        
+
     
     # compute sum and max spectra and append to zipstore 
     
