@@ -1,4 +1,4 @@
-__version__ = "0.1.25"
+__version__ = "0.1.26"
 
 from .storage import *
 from .calibration import * 
