@@ -58,9 +58,9 @@ L = Layers()
 
 def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE, verbose=True, 
                     flip_horizontal=False, flip_vertical=False): 
-    '''Convert Bruker Macro XRF (.raw) data file *raw_filename* and (.rpl) shape file *rpl_filename*.  
+    '''Convert Bruker Macro XRF (.raw) data file `raw_filename` and (.rpl) shape file `rpl_filename`.  
     
-    into a Zarr Zipstore datastack file (.datastack).
+    into a zarr ZipStore datastack file (.datastack).
     ''' 
 
     print('Please wait while preparing data conversion...')
@@ -94,14 +94,12 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE,
     # initializing dask array 
     arr = da.from_array(raw_mm) 
     arr = arr.astype(np.float32)
+
+    # divide into regular chunks
+    arr = arr.rechunk(balance=True) 
     
     # schedule spectral gaussian smoothing computation  
     smoothed = gaussian_filter(arr, (0, 0, 7)) 
-
-    # trying to fix error with irregular chunking (not working)
-    # smoothed.rechunk(balance=True) 
-    # therefore now trying with explicit chunk sizes (not working)
-    # smoothed.rechunk((100, 100, 100)) 
     
     # create and open an empty zip file
     zs = ZipStore(datastack_file, mode='w') 
@@ -110,19 +108,13 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE,
         print(f'Writing: {datastack_file}...')
 
     # compute and write maxrf data to zipstore 
-    # I hope that the progressbar still works with direct invocation of zarr
     with ProgressBar(): 
-
-        # undo depreciate dask.array.to_zarr() due to bugs... due to intolerably low speed 
         smoothed.to_zarr(zs, component=datapath) 
-        
-        # undo: instead directly use zarr.create_array
-    #zarr.create_array(store=zs, name=datapath, data=smoothed)
         
     zs.close()
         
     
-    # compute sum and max spectra and append to zipstore 
+    # also compute sum and max spectra and append to zipstore 
     
     y_max, y_sum = max_and_sum_spectra(datastack_file, datapath=L.MAXRF_CUBE)
     
