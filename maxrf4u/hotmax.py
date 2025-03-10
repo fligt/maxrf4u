@@ -281,7 +281,7 @@ def compute_hotmax_spectra(datastack_file, prominence=0.35, auto_write=False):
 
 
 
-def compute_hotmax_noise(datastack_file, radius=200, alpha=0.6, beta=0.1): 
+def compute_hotmax_noise(datastack_file, radius=200, alpha=0.6, beta=0.1, auto_write=False): 
     '''Utility function to get baselines and noiselines from hotmax spectra in *datastack_file*.  
     
     Use once to compute base noise envelopes. Ask user confirmation for saving result to datastack file. '''
@@ -305,9 +305,12 @@ def compute_hotmax_noise(datastack_file, radius=200, alpha=0.6, beta=0.1):
         noiseline_spectra.append(noiseline) 
         
     print(f'Ready computing {len(hotmax_spectra)} noise envelopes.                           \n')
-    
-    # user input           
-    write = input('Write hotmax baselines and noiselines to datastack file [y/n]? ')
+
+    if auto_write: 
+        write = 'y'
+    else: 
+        # user input           
+        write = input('Write hotmax baselines and noiselines to datastack file [y/n]? ')
          
     if write == 'y': 
         maxrf4u.append(baseline_spectra, ds.HOTMAX_BASELINES, ds.datastack_file)
@@ -317,7 +320,7 @@ def compute_hotmax_noise(datastack_file, radius=200, alpha=0.6, beta=0.1):
     
     return 
 
-def compute_subpeaks(datastack_file, prominence=0.2): 
+def compute_subpeaks(datastack_file, prominence=0.2, auto_write=False): 
     '''Find subpeaks in hotmax spectrum that exceed the noise envelope.
     
     Writes result to datas
@@ -348,9 +351,12 @@ def compute_subpeaks(datastack_file, prominence=0.2):
         
         # append 
         subpeak_idxs_list.append(peak_idxs)
-         
-    # user input           
-    write = input('Write hotmax baselines and noiselines to datastack file [y/n]? ')    
+
+    if auto_write: 
+        write = 'y'
+    else: 
+        # user input           
+        write = input('Write hotmax baselines and noiselines to datastack file [y/n]? ')    
     
     if write == 'y': 
          
