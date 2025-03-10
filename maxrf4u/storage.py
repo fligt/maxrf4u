@@ -120,6 +120,8 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE,
     
     append(y_max, L.MAXRF_MAXSPECTRUM, datastack_file)
     append(y_sum, L.MAXRF_SUMSPECTRUM, datastack_file)
+
+    print('\n')
     
     
 
@@ -326,7 +328,7 @@ def parse_rpl(rpl_file, verbose=False):
     if verbose: 
         print(f'Parsing {rpl_file}: ')
         for l in lines: 
-            print(l)
+            print(l, end='\r')
     
     # get rid of spaces and newline characters 
     keys_and_values = dict([re.sub(' |\n', '', l).split('\t') for l in lines]) 

@@ -17,7 +17,7 @@ import math
 RHODIUM_Ka = 20.210105052526263 # Rh_KL3 
 IRON_Ka = 6.4032016008004 # Fe_KL3 
 
-def calibrate(datastack_file, anode='Rh', prominence=0.1, tube_keV=40): 
+def calibrate(datastack_file, anode='Rh', prominence=0.1, tube_keV=40, auto_write=False): 
     '''Automatic two step energy energy calibration. 
     
     In step 1 a preliminary calibration is done assuming that the  
@@ -127,7 +127,10 @@ def calibrate(datastack_file, anode='Rh', prominence=0.1, tube_keV=40):
     fig.canvas.draw()
         
     # write energies 
-    write = input('Write instrument energy calibration to datastack file [y/n]? ')
+    if auto_write: 
+        write = 'y'     
+    else: 
+        write = input('Write instrument energy calibration to datastack file [y/n]? ')
 
     if write == 'y': 
         print(f'\nWriting channel energies (keV) to: {datastack_file}')
