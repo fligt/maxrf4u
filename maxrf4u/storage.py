@@ -111,17 +111,16 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE,
 
     # compute and write maxrf data to zipstore 
     # I hope that the progressbar still works with direct invocation of zarr
-    with ProgressBar(): 
+    #with ProgressBar(): 
 
         # depreciate dask.array.to_zarr() due to bugs... 
         # smoothed.to_zarr(zs, component=datapath) 
         
         # instead directly use zarr.create_array
-        zarr.create_array(store=zs, name=datapath, data=smoothed)
+    zarr.create_array(store=zs, name=datapath, data=smoothed)
         
     zs.close()
         
-
     
     # compute sum and max spectra and append to zipstore 
     
