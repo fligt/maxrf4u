@@ -408,8 +408,12 @@ def compute_nmf_element_maps(datastack_file, elements_unsorted, excitation_energ
          
     if write == 'y': 
         maxrf4u.append(element_maps, 'nmf_elementmaps', datastack_file)
-        maxrf4u.append(np.array(elements), 'nmf_elements', datastack_file) 
         maxrf4u.append(W_elem, 'nmf_peaks2elements_matrix', datastack_file)
+        
+        # need workaround for zarr format 3 to store elements as atomic numbers 
+        # maxrf4u.append(np.array(elements), 'nmf_elements', datastack_file) 
+        atomnums = maxrf4u.atomnums_from_elems(elements)
+        maxrf4u.append(atomnums, 'nmf_atomnums', datastack_file)
         
         print(f'\nSaved NMF element maps and factorization data to: {datastack_file}')
 
