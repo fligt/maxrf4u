@@ -57,10 +57,12 @@ L = Layers()
 # functions 
 
 def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE, verbose=True, 
-                    flip_horizontal=False, flip_vertical=False): 
+                    flip_horizontal=False, flip_vertical=False, chunks="auto", rechunk=False): 
     '''Convert Bruker Macro XRF (.raw) data file `raw_filename` and (.rpl) shape file `rpl_filename`.  
     
     into a zarr ZipStore datastack file (.datastack).
+
+    for information about chunk sizing see: dask.array.core.normalize_chunks
     ''' 
 
     print('Please wait while preparing data conversion...')
@@ -92,11 +94,13 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE,
     raw_mm = np.memmap(raw_file, dtype=dtype, mode='r', shape=shape)[::v_stride, ::h_stride] 
 
     # initializing dask array 
-    arr = da.from_array(raw_mm) 
+    arr = da.from_array(raw_mm, chunks=chunks) 
     arr = arr.astype(np.float32)
 
+    
     # divide into regular chunks
-    arr = arr.rechunk(balance=True) 
+    if rechunk:
+        arr = arr.rechunk(balance=True)
     
     # schedule spectral gaussian smoothing computation  
     smoothed = gaussian_filter(arr, (0, 0, 7)) 
@@ -116,7 +120,7 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE,
     
     # also compute sum and max spectra and append to zipstore 
     
-    y_max, y_sum = max_and_sum_spectra(datastack_file, datapath=L.MAXRF_CUBE)
+    y_max, y_sum = max_and_sum_spectra(datastack_file, datapath=L.MAXRF_CUBE, chunks=chunks)
     
     append(y_max, L.MAXRF_MAXSPECTRUM, datastack_file)
     append(y_sum, L.MAXRF_SUMSPECTRUM, datastack_file)
@@ -237,7 +241,7 @@ def repack(datastack_file, select='all', overwrite=True, verbose=False):
         tree(datastack_file)
         
 
-def max_and_sum_spectra(datastack_file, datapath=L.MAXRF_CUBE): 
+def max_and_sum_spectra(datastack_file, datapath=L.MAXRF_CUBE, chunks="auto"): 
     '''Compute sum spectrum and max spectrum for 'maxrf' dataset in *datastack_file*. 
     
     Returns: *y_sum*, *y_max*'''
@@ -247,7 +251,7 @@ def max_and_sum_spectra(datastack_file, datapath=L.MAXRF_CUBE):
     root = zarr.open_group(store=zs, mode='r')
     
     # initialize dask array 
-    arr = da.from_array(root[datapath])
+    arr = da.from_array(root[datapath], chunks=chunks)
         
     # flatten (better avoid)
     h, w, d = arr.shape 
