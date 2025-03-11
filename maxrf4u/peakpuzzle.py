@@ -368,7 +368,7 @@ def elems_from_atomnums(atomnum_list):
     Returns: elements
     '''
     
-    elements = np.array([mendeleev.element(atomnum).symbol for atomnum in atomnum_list])
+    elements = [mendeleev.element(int(atomnum)).symbol for atomnum in atomnum_list]
     
     return elements
 
