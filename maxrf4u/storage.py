@@ -78,7 +78,7 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE,
         basename = os.path.basename(raw_file) 
         basename = re.sub('\\.raw$', '', basename) + DATASTACK_EXT
         datastack_file = os.path.join(output_dir, basename)
-        
+
     # read data cube shape and dtype from .rpl file 
     dtype, shape = parse_rpl(rpl_file, verbose=verbose)
     
@@ -126,6 +126,8 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE,
     append(y_sum, L.MAXRF_SUMSPECTRUM, datastack_file)
 
     print('\n')
+
+    return datastack_file
     
     
 
