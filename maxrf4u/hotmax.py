@@ -178,34 +178,34 @@ def compute_hotmax_spectra(datastack_file, prominence=0.35, auto_write=False):
     peaks_x = x_keVs[peak_indices]
     peaks_y = y_max[peak_indices]
     
-    # plot max spectrum with peaks 
+    if not auto_write:
+        # plot max spectrum with peaks 
+        
+        #plt.close('all')
+        #plt.ion() # important for updating plots with fig.canvas.draw() 
+        fig, ax = plt.subplots(figsize=[9, 4])
     
-    #plt.close('all')
-    #plt.ion() # important for updating plots with fig.canvas.draw() 
+        #fig.canvas.draw()   
+        ax.fill_between(x_keVs, y_max, color='r', alpha=0.3)
+        ax.scatter(peaks_x, peaks_y, facecolor='w', edgecolor='r')  
+        ax.set_xlim(peaks_x[0] - 0.5, peaks_x[-1] + 5) 
+        ax.set_ylim(-5, 1.15 * np.max(peaks_y))
+        
+        #plt.pause(0.3) 
+        #fig.canvas.draw() 
+        #fig.canvas.flush_events()
     
-    fig, ax = plt.subplots(figsize=[9, 4])
-
-    #fig.canvas.draw()   
-    ax.fill_between(x_keVs, y_max, color='r', alpha=0.3)
-    ax.scatter(peaks_x, peaks_y, facecolor='w', edgecolor='r')  
-    ax.set_xlim(peaks_x[0] - 0.5, peaks_x[-1] + 5) 
-    ax.set_ylim(-5, 1.15 * np.max(peaks_y))
+        for i, peak_xy in enumerate(zip(peaks_x, peaks_y)): 
+            ax.annotate(f'[{i}]', peak_xy, xytext=[0, 10], color='r', 
+                            textcoords='offset points', ha='center')
+        ax.set_xlabel('Energy [keV]')
+        ax.set_ylabel('Max spectrum intensity [counts]')
+        ax.set_title(f'Found {len(peak_indices)} peaks with prominence > {prominence}')
+        ax.grid()
     
-    #plt.pause(0.3) 
-    #fig.canvas.draw() 
-    #fig.canvas.flush_events()
-    
-    for i, peak_xy in enumerate(zip(peaks_x, peaks_y)): 
-        ax.annotate(f'[{i}]', peak_xy, xytext=[0, 10], color='r', 
-                        textcoords='offset points', ha='center')
-    ax.set_xlabel('Energy [keV]')
-    ax.set_ylabel('Max spectrum intensity [counts]')
-    ax.set_title(f'Found {len(peak_indices)} peaks with prominence > {prominence}')
-    ax.grid()
-
-    #plt.pause(0.3) 
-    #fig.canvas.draw() 
-    #fig.canvas.flush_events()
+        #plt.pause(0.3) 
+        #fig.canvas.draw() 
+        #fig.canvas.flush_events()
  
     
     # read corresponding channel maps for all max peak indices 
@@ -235,23 +235,24 @@ def compute_hotmax_spectra(datastack_file, prominence=0.35, auto_write=False):
         print(f'Step 3/3: Reading hot max spectrum {n}/{len(hotmax_spots) - 1}...', end='\r')
         spectrum = ds.maxrf_cube[i,j,:].compute()
         hotmax_spectra.append(spectrum)
-        
-        ax.plot(x_keVs, spectrum, color='b', linewidth=0.5, alpha=0.5) 
-        ax.fill_between(x_keVs, spectrum, color='b', linewidth=0.5, alpha=0.3) 
-        
-        # DEPRECIATING MASK, INSTEAD USING RAGGED LIST  
-        
-        #x = x_keVs[hotmax_mask[n]]
-        #y = spectrum[hotmax_mask[n]] 
-        
-        x = x_keVs[hotmax_peak_idxs_list[n]]
-        y = spectrum[hotmax_peak_idxs_list[n]]
-        ax.scatter(x, y, facecolor='b', edgecolor='r') 
 
-        # force updating plot 
-        #plt.pause(0.2) 
-        #fig.canvas.draw()
-        #fig.canvas.flush_events()
+        if not auto_write:
+            ax.plot(x_keVs, spectrum, color='b', linewidth=0.5, alpha=0.5) 
+            ax.fill_between(x_keVs, spectrum, color='b', linewidth=0.5, alpha=0.3) 
+        
+            # DEPRECIATING MASK, INSTEAD USING RAGGED LIST  
+            
+            #x = x_keVs[hotmax_mask[n]]
+            #y = spectrum[hotmax_mask[n]] 
+        
+            x = x_keVs[hotmax_peak_idxs_list[n]]
+            y = spectrum[hotmax_peak_idxs_list[n]]
+            ax.scatter(x, y, facecolor='b', edgecolor='r') 
+
+            # force updating plot 
+            #plt.pause(0.2) 
+            #fig.canvas.draw()
+            #fig.canvas.flush_events()
         
     print(f'Step 3/3: Ready with reading hot max spectra. ')
 
