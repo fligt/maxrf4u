@@ -448,7 +448,7 @@ def raw_to_element_maps(elements_unsorted, raw_file, rpl_file, output_dir=None, 
     _print_and_clear("Computing peak maps", 6, n_steps)
     maxrf4u.compute_nmf_peakmaps(datastack_file, auto_write=auto_write)
     
-    _print_and_clear("Computing element maps", 7, nsteps)
+    _print_and_clear("Computing element maps", 7, n_steps)
     maxrf4u.compute_nmf_element_maps(datastack_file, auto_write=auto_write, elements_unsorted=elements_unsorted)
     
     clear_output()
