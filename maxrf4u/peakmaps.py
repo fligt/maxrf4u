@@ -4,7 +4,7 @@
 
 # %% auto 0
 __all__ = ['get_continuum', 'get_gaussians', 'fit_spectrum_peaks', 'compute_nmf_peakmaps', 'multi_plot',
-           'compute_nmf_element_maps']
+           'compute_nmf_element_maps', 'raw_to_element_maps']
 
 # %% ../notebooks/60_peakmaps.ipynb 30
 from dask import delayed 
@@ -17,6 +17,8 @@ import matplotlib.pyplot as plt
 from IPython.display import SVG 
 
 import sklearn.decomposition as skd 
+
+from IPython.display import clear_output
 
 # %% ../notebooks/60_peakmaps.ipynb 31
 def get_continuum(datastack_file): 
@@ -418,3 +420,46 @@ def compute_nmf_element_maps(datastack_file, elements_unsorted, excitation_energ
         print(f'\nSaved NMF element maps and factorization data to: {datastack_file}')
 
     return elements, element_maps 
+
+
+
+def raw_to_element_maps(elements_unsorted, raw_file, rpl_file, output_dir=None, chunks='auto', auto_write=True, n_steps=7):
+    '''Convert Bruker Macro XRF (.raw) data file `raw_filename` and (.rpl) shape file `rpl_filename`
+    
+    into element maps based on the list `elements_unsorted`.
+    
+    Running into memory errors? see: dask.array.core.normalize_chunks for chunk options.'''
+    
+    _print_and_clear("Generating datastack", 1, n_steps)
+    datastack_file = maxrf4ux.raw_to_datastack(raw_file, rpl_file, output_dir=output_dir, chunks=chunks)
+    
+    _print_and_clear("Calibrating energies", 2, n_steps)
+    maxrf4u.calibrate(datastack_file, auto_write=auto_write)
+    
+    _print_and_clear("Computing hotmax spectra", 3, n_steps)
+    maxrf4u.compute_hotmax_spectra(datastack_file, auto_write=auto_write)
+    
+    _print_and_clear("Computing hotmax noise", 4, n_steps)
+    maxrf4u.compute_hotmax_noise(datastack_file, auto_write=auto_write)
+    
+    _print_and_clear("Computing subpeaks", 5, n_steps)
+    maxrf4u.compute_subpeaks(datastack_file, auto_write=auto_write)
+    
+    _print_and_clear("Computing peak maps", 6, n_steps)
+    maxrf4u.compute_nmf_peakmaps(datastack_file, auto_write=auto_write)
+    
+    _print_and_clear("Computing element maps", 7, nsteps)
+    maxrf4u.compute_nmf_element_maps(datastack_file, auto_write=auto_write, elements_unsorted=elements_unsorted)
+    
+    clear_output()
+    print("Datastack finished")
+    print(f"Stored at {datastack_file}")
+    maxrf4u.tree(datastack_file)
+
+def _print_and_clear(message, step, n_steps):
+    '''Clears the cell output and prints the next step with progress number.
+    '''
+    
+    clear_output(wait=True)
+    print(f'{message} ~{step}/{n_steps}')
+    
