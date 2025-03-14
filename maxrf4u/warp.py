@@ -24,6 +24,7 @@ import base64
 import skimage.transform as skt 
 import imageio.v2 as imageio 
 import skimage.transform as skt
+import maxrf4u
 
 import numpy as np
 import cv2 
@@ -47,8 +48,11 @@ class ImageRegistrationHelper(object):
             max_width = None 
         
         # create base64 urls 
-        src_url = _img_to_base64_url(src_im, max_width=max_width)
-        dst_url = _img_to_base64_url(dst_im, max_width=max_width)
+        self.src_url = _img_to_base64_url(src_im, max_width=max_width)
+        self.dst_url = _img_to_base64_url(dst_im, max_width=max_width)
+
+        self.src_im = src_im
+        self.dst_im = dst_im
         
         # create custom colored icons
         w, h = 60, 20
@@ -78,7 +82,7 @@ class ImageRegistrationHelper(object):
             m = Map(center=[src_h/2, src_w/2], zoom=src_zoom+1, crs=projections['Simple'],  layout=map_layout, 
                     scroll_wheel_zoom=True, min_zoom=src_zoom-2, interpolation='nearest')
 
-            imo = ImageOverlay(url=src_url, bounds=[[-0.5, -0.5], [src_h - 0.5, src_w - 0.5]]) # bounds= SW NE corners
+            imo = ImageOverlay(url=self.src_url, bounds=[[-0.5, -0.5], [src_h - 0.5, src_w - 0.5]]) # bounds= SW NE corners
             mrk = Marker(location=location, draggable=True, title='Drag me to landmark', icon=icons[i])
             fsc = FullScreenControl()
 
@@ -97,7 +101,7 @@ class ImageRegistrationHelper(object):
             m = Map(center=[dst_h/2, dst_w/2], zoom=dst_zoom+1, crs=projections['Simple'],  layout=map_layout, 
                     scroll_wheel_zoom=True, min_zoom=dst_zoom-2, interpolation='nearest')
 
-            imo = ImageOverlay(url=dst_url, bounds=[[-0.5, -0.5], [dst_h - 0.5, dst_w - 0.5]]) # bounds= SW NE corners
+            imo = ImageOverlay(url=self.dst_url, bounds=[[-0.5, -0.5], [dst_h - 0.5, dst_w - 0.5]]) # bounds= SW NE corners
             mrk = Marker(location=location, draggable=True, title='Drag me to landmark', icon=icons[j])
             fsc = FullScreenControl()
 
@@ -150,7 +154,31 @@ class ImageRegistrationHelper(object):
             print(f'dst_points = {dst_points}')
                
         return src_points, dst_points 
-    
+
+    def reg_to_datastack(self, datastack_file, verbose=False):
+        '''Extract marker points from widget and save warped image to datastack'''
+        src_points, dst_points = self.get_marker_coordinates()
+        
+        reg_im, extent = warp(self.src_im, self.dst_im, np.array(src_points), np.array(dst_points), rgba=False)
+        
+        maxrf4u.append(reg_im, 'reg_im', datastack_file)
+        maxrf4u.append(extent, 'reg_extent', datastack_file)
+
+        if verbose:
+            ds = maxrf4u.DataStack(datastack_file)
+            
+            ds_extent = ds.read('reg_extent')
+            ds_reg_im = ds.read('reg_im')
+            
+            fig, [ax1, ax2] = plt.subplots(ncols=2, figsize=[7, 4], sharex=True, sharey=True)
+            
+            ax1.imshow(self.dst_im)
+            ax2.imshow(ds_reg_im, extent=ds_extent);
+            
+            ax1.set_xlim([150, 340])
+            ax1.set_ylim([800, 500])
+            
+            ds.tree()
         
         
 def _img_to_base64_url(img_data, max_width=None): 
