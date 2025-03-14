@@ -423,7 +423,7 @@ def compute_nmf_element_maps(datastack_file, elements_unsorted, excitation_energ
 
 
 
-def raw_to_element_maps(elements_unsorted, raw_file, rpl_file, output_dir=None, chunks='auto', auto_write=True, n_steps=7):
+def raw_to_element_maps(elements_unsorted, raw_file, rpl_file, output_dir=None, chunks='10 MiB', auto_write=True, n_steps=7):
     '''Convert Bruker Macro XRF (.raw) data file `raw_filename` and (.rpl) shape file `rpl_filename`
     
     into element maps based on the list `elements_unsorted`.
