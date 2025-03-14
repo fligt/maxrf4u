@@ -431,7 +431,7 @@ def raw_to_element_maps(elements_unsorted, raw_file, rpl_file, output_dir=None, 
     Running into memory errors? see: dask.array.core.normalize_chunks for chunk options.'''
     
     _print_and_clear("Generating datastack", 1, n_steps)
-    datastack_file = maxrf4ux.raw_to_datastack(raw_file, rpl_file, output_dir=output_dir, chunks=chunks)
+    datastack_file = maxrf4u.raw_to_datastack(raw_file, rpl_file, output_dir=output_dir, chunks=chunks)
     
     _print_and_clear("Calibrating energies", 2, n_steps)
     maxrf4u.calibrate(datastack_file, auto_write=auto_write)
