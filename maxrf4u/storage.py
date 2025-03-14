@@ -57,12 +57,12 @@ L = Layers()
 # functions 
 
 def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE, verbose=True, 
-                    flip_horizontal=False, flip_vertical=False, chunks="auto", rechunk=False): 
+                    flip_horizontal=False, flip_vertical=False, chunks='10 MiB', rechunk=False): 
     '''Convert Bruker Macro XRF (.raw) data file `raw_filename` and (.rpl) shape file `rpl_filename`.  
     
     into a zarr ZipStore datastack file (.datastack).
 
-    for information about chunk sizing see: dask.array.core.normalize_chunks
+    To avoid memory problems on computers with less RAM the chunks option is set to '10 MiB'. 
     ''' 
 
     print('Please wait while preparing data conversion...')
