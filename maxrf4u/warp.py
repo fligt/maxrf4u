@@ -392,7 +392,7 @@ def imreg_to_datastack(src_im, dst_im, datastack_file):
     
     maxrf4u.append(imvis_reg, 'imvis_reg', datastack_file)
     maxrf4u.append(imvis_reg_highres, 'imvis_reg_highres', datastack_file)
-    maxrf4u.append(imvis_extent, 'imvis_extent', datastack_file) 
+    maxrf4u.append(extent, 'imvis_extent', datastack_file) 
 
     return imvis_reg, imvis_reg_highres, extent 
 
