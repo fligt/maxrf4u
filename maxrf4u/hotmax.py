@@ -17,6 +17,8 @@ import scipy.interpolate as sip
 from IPython.display import SVG 
 from itertools import chain 
 
+import moseley 
+
 # %% ../notebooks/40_hotmax.ipynb 40
 class HotmaxAtlas(): 
     
@@ -160,7 +162,38 @@ class HotmaxAtlas():
             plt.ion()
             return SVG('plot.svg')
 
+    def finder(self, elem, tube_keV=23, tol=0.1):
+        '''For element `elem` and excitation energy `tube_keV`, find nearest matching hotmax peak and corresponding hotmax spectrum number.
+
+        If a match within tolerance `tol` is found, return hotmax spectrum index 
+        Returns: hotmax spectrum index num'''
+
+        # get alpha peak energy  
+        xf = moseley.XFluo(elem, tube_keV=tube_keV)
+        is_alpha = xf.peak_intensities == 1. 
+        keV_alpha = xf.peak_energies[is_alpha][0]
         
+        # get hotmax energies 
+        hotmax_idxs = self.hotmax_peak_idxs_flat
+        x_keVs = self.x_keVs 
+        hotmax_keVs = x_keVs[hotmax_idxs]
+        
+        distances = np.sqrt((hotmax_keVs - keV_alpha)**2)
+        min_dist = min(distances)
+        idx = hotmax_idxs[np.argmin(distances)]
+        
+        # brute force way to locate position in ragged list 
+        for i, idx_list in enumerate(self.hotmax_peak_idxs_list): 
+            if idx in idx_list: 
+                hotmax_n = i 
+                
+        if min_dist < tol:
+            match = hotmax_n 
+        else: 
+            match = False
+            
+        return match 
+
         
 def compute_hotmax_spectra(datastack_file, prominence=0.35, auto_write=False): 
     '''Collect hotmax pixels and corresponding spectra from *datastack_file*. 
@@ -484,4 +517,37 @@ def _group_superimposed(hotmax_pixels):
     #return hotmax_spots, hotmax_mask 
     
     return hotmax_spots, hotmax_peak_idxs_list 
+
+
+def _finder(datastack_file, elem, tube_keV, tol=0.1):  
+    '''Scan HotmaxAtlas to locate nearest hotmax peak and corresponding hotmax spectrum number. 
+     
+    Returns: `hotmax_n` or False if not matched. ''' 
+
     
+
+    # get alpha peak energy  
+    xf = moseley.XFluo(elem, tube_keV=tube_keV)
+    is_alpha = xf.peak_intensities == 1. 
+    keV_alpha = xf.peak_energies[is_alpha][0]
+    
+    # get hotmax energies 
+    hotmax_idxs = hma.hotmax_peak_idxs_flat
+    x_keVs = hma.x_keVs 
+    hotmax_keVs = x_keVs[hotmax_idxs]
+    
+    distances = np.sqrt((hotmax_keVs - keV_alpha)**2)
+    min_dist = min(distances)
+    idx = hotmax_idxs[np.argmin(distances)]
+    
+    # brute force way to locate position in ragged list 
+    for i, idx_list in enumerate(hma.hotmax_peak_idxs_list): 
+        if idx in idx_list: 
+            hotmax_n = i 
+            
+    if min_dist < tol:
+        match = hotmax_n 
+    else: 
+        match = False
+        
+    return match 
