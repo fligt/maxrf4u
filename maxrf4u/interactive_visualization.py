@@ -167,7 +167,7 @@ def make_gridbox_widget(img_urls, titles, shape=None):
 
         m = Map(center=[h/2, w/2], zoom=-4, crs=projections['Simple'], layout=map_layout, 
                     scroll_wheel_zoom=True, min_zoom=-5)#, interpolation='nearest')
-        
+        L
         imo = ImageOverlay(url=url, bounds=[[0, 0], [h, w]]) # bounds= SW NE corners
         fsc = FullScreenControl()
         
@@ -202,7 +202,10 @@ def make_gridbox_widget(img_urls, titles, shape=None):
     
     return gridbox 
 
-def export_element_maps(datastack_file, output_dir=None, histeq=True):
+def export_element_maps(datastack_file, output_dir=None, histeq=True): 
+    '''Save element maps as separate png images.
+    '''
+    
     ds = mx.DataStack(datastack_file)
 
     if not output_dir:
@@ -221,5 +224,6 @@ def export_element_maps(datastack_file, output_dir=None, histeq=True):
         element_maps = [ske.equalize_hist(m) for m in element_maps]
         
     for im, elem in zip(element_maps, elements):
+
         plt.imsave(f'{output_dir}{file_name}_{elem}.png', im)
         print(f'{output_dir}{file_name}_{elem}.png saved')
