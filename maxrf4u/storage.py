@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['DATASTACK_EXT', 'L', 'Layers', 'raw_to_datastack', 'tree', 'underscorify', 'append', 'append_list', 'repack',
-           'max_and_sum_spectra', 'make_raw_preview', 'parse_rpl', 'DataStack', 'zarr_to_zip']
+           'max_and_sum_spectra', 'make_raw_preview', 'parse_rpl', 'DataStack']
 
 # %% ../notebooks/10_storage.ipynb 29
 import maxrf4u
@@ -24,9 +24,12 @@ import scipy.signal as ssg
 import time 
 import skimage as sk 
 from pathlib import Path
-import shutil 
+import warnings 
 
 # %% ../notebooks/10_storage.ipynb 30
+# suppress annoying dask warnings 
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 # CONSTANTS 
 DATASTACK_EXT = '.datastack' 
 
@@ -57,7 +60,7 @@ L = Layers()
 
 # functions 
 
-def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE, verbose=True, 
+def raw_to_datastack(raw_file, rpl_file, output_dir=None, name=L.MAXRF_CUBE, verbose=True, 
                     flip_horizontal=False, flip_vertical=False, chunks='10 MiB', rechunk=False): 
     '''Convert Bruker Macro XRF (.raw) data file `raw_filename` and (.rpl) shape file `rpl_filename`.  
     
@@ -106,7 +109,7 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE,
     # schedule spectral gaussian smoothing computation  
     smoothed = gaussian_filter(arr, (0, 0, 7)) 
     
-    # create and open an empty zip file
+    # create and open an empty zip store 
     zs = ZipStore(datastack_file, mode='w') 
     
     if verbose: 
@@ -114,8 +117,10 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, datapath=L.MAXRF_CUBE,
 
     # compute and write maxrf data to zipstore 
     with ProgressBar(): 
-        smoothed.to_zarr(zs, component=datapath) 
         
+        # smoothed.to_zarr(zs, component=datapath) 
+        zarr.create_array(store=zs, name=name, data=arr)
+       
     zs.close()
         
     
@@ -172,8 +177,8 @@ def append(arr, datapath, datastack_file):
     if not isinstance(arr, dask.array.Array):  
         arr = da.from_array(arr) 
             
-    zs = ZipStore(datastack_file, mode='a')     
-    root = zarr.open_group(store=zs, mode='r')
+    zs = ZipStore(datastack_file, mode='a') 
+    root = zarr.open_group(store=zs) # ehm, I need a listing of all datasets 
     
     # append underscores to make unique if datapath exists 
     datapath_list = sorted(root) 
@@ -493,27 +498,3 @@ def _unstraighten(padded_array, nan=-9999):
 
     return ragged_list
     
-
-def zarr_to_zip(zarr_path, delete_zarr=True): 
-    '''Utility function to compress .zarr LocalStore folder into ZipStore. '''
-
-    zarr_path = os.path.abspath(zarr_path)
-
-    assert zarr_path.endswith('.zarr'), 'Need valid fle path to .zarr folder as input here. '
-    assert os.path.exists(zarr_path), f'Can not find: {zarr_path}.' 
-    
-    zarr_name = os.path.basename(zarr_path)
-    base_name = re.sub('\\.zarr', '', zarr_name)    
-    
-    # create temporary zip archive in current working directory  
-    zip_path = shutil.make_archive(base_name, format='zip', root_dir=zarr_path, base_dir=zarr_path) 
-    
-    # move zip store to .zarr parent folder and rename extension to .datastack  
-    datastack_path = re.sub('zarr$', 'datastack', zarr_path)
-    os.rename(zip_path, datastack_path) # also moves file to 
-    
-    # remove zarr folder after archiving into a ZipStore datastack 
-    if delete_zarr: 
-        shutil.rmtree(zarr_path)
-
-    return datastack_path       
