@@ -343,12 +343,12 @@ def parse_rpl(rpl_file, verbose=False):
             print(l, end='\r')
     
     # get rid of spaces and newline characters 
-    keys_and_values = dict([re.sub(' |\n', '', l).split('\t') for l in lines]) 
+    keys_and_values = dict([re.sub(' |\n', '', l.lower()).split('\t') for l in lines]) 
     
     width = int(keys_and_values['width'])
     height = int(keys_and_values['height'])
     depth = int(keys_and_values['depth']) 
-    nbytes = int(keys_and_values['data-Length'])
+    nbytes = int(keys_and_values['data-length'])
 
     dtype = f'uint{nbytes*8}'
     shape = (height, width, depth)   
