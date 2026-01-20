@@ -4,7 +4,7 @@
 __all__ = ['DATASTACK_EXT', 'L', 'Layers', 'raw_to_datastack', 'tree', 'underscorify', 'append', 'append_list', 'repack',
            'max_and_sum_spectra', 'make_raw_preview', 'parse_rpl', 'DataStack']
 
-# %% ../notebooks/10_storage.ipynb
+# %% ../notebooks/10_storage.ipynb #3148ba77
 import maxrf4u
 
 import numpy as np 
@@ -26,7 +26,7 @@ import skimage as sk
 from pathlib import Path
 import warnings 
 
-# %% ../notebooks/10_storage.ipynb
+# %% ../notebooks/10_storage.ipynb #979ba8f5
 # suppress annoying dask warnings 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 

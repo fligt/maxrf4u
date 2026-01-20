@@ -6,7 +6,7 @@
 __all__ = ['EOI', 'Peak_Pattern_Atlas', 'plot_patterns', 'get_eoi_patterns', 'colorize', 'get_instrument_pattern', 'update_eoi',
            'elems_from_atomnums', 'atomnums_from_elems']
 
-# %% ../notebooks/50_peak-pattern-puzzle.ipynb
+# %% ../notebooks/50_peak-pattern-puzzle.ipynb #a3e72b99
 import maxrf4u  
 
 from . import HotmaxAtlas 
@@ -23,7 +23,7 @@ import mendeleev
 import moseley as mos
 import numpy as np 
 
-# %% ../notebooks/50_peak-pattern-puzzle.ipynb
+# %% ../notebooks/50_peak-pattern-puzzle.ipynb #b2db5a0b
 class Peak_Pattern_Atlas():
     
     def __init__(self, elements_of_interest=None, tube_keV=40, datastack_file=None, verbose=True): 

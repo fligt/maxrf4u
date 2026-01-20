@@ -5,7 +5,7 @@
 # %% auto #0
 __all__ = ['HotmaxAtlas', 'compute_hotmax_spectra', 'compute_hotmax_noise', 'compute_subpeaks']
 
-# %% ../notebooks/40_hotmax.ipynb
+# %% ../notebooks/40_hotmax.ipynb #c653581f
 import maxrf4u 
 import scipy.signal as ssg 
 import numpy as np 
@@ -19,7 +19,7 @@ from itertools import chain
 
 import moseley 
 
-# %% ../notebooks/40_hotmax.ipynb
+# %% ../notebooks/40_hotmax.ipynb #965e6e37
 class HotmaxAtlas(): 
     
     def __init__(self, datastack_file, prominence=0.2): 

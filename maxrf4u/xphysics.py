@@ -5,7 +5,7 @@
 # %% auto #0
 __all__ = ['gaussian_convolve', 'ElementLines', 'get_element_spectrum', 'get_element_spectra']
 
-# %% ../notebooks/90_xphysics.ipynb
+# %% ../notebooks/90_xphysics.ipynb #8385aa19
 import numpy as np 
 import xraydb 
 

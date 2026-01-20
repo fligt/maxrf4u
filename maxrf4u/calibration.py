@@ -5,7 +5,7 @@
 # %% auto #0
 __all__ = ['RHODIUM_Ka', 'IRON_Ka', 'calibrate', 'detector_angle', 'find_instrument_peaks', 'compton_shift']
 
-# %% ../notebooks/20_calibration.ipynb
+# %% ../notebooks/20_calibration.ipynb #2668331f
 import maxrf4u 
 import matplotlib.pyplot as plt 
 import numpy as np 
@@ -13,7 +13,7 @@ import scipy.signal as ssg
 import matplotlib.cm as cm 
 import math
 
-# %% ../notebooks/20_calibration.ipynb
+# %% ../notebooks/20_calibration.ipynb #83962f2f
 RHODIUM_Ka = 20.210105052526263 # Rh_KL3 
 IRON_Ka = 6.4032016008004 # Fe_KL3 
 

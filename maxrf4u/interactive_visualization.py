@@ -5,7 +5,7 @@
 # %% auto #0
 __all__ = ['UploadDir', 'make_filenames', 'make_gridbox_widget', 'export_element_maps']
 
-# %% ../notebooks/80_interactive-plotting.ipynb
+# %% ../notebooks/80_interactive-plotting.ipynb #d8aa260b
 import maxrf4u as mx
 
 import skimage.exposure as ske
@@ -33,7 +33,7 @@ import urllib
 import numpy as np 
 import matplotlib.pyplot as plt
 
-# %% ../notebooks/80_interactive-plotting.ipynb
+# %% ../notebooks/80_interactive-plotting.ipynb #943c5194
 class UploadDir(): 
     
     def __init__(self, mount_dir, objnr, bucket_url, subdir='images'):
