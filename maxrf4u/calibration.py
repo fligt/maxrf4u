@@ -60,12 +60,25 @@ def calibrate(datastack_file, anode='Rh', prominence=0.03, tube_keV=40, auto_wri
     max_peak_indices, shapes_dict = ssg.find_peaks(y_max, prominence=prominence) 
     peak_keVs_precalib = keVs_precalib[max_peak_indices]
 
-    # now find index of peak nearest to Fe_Ka energy 
-    iron_peak_i = np.argmin((peak_keVs_precalib - IRON_Ka)**2)
     
+    # needed to improve the algorithm to pick the largest peak 
+    # in the iron region instead of nearest 
+    # for now this is a quick hack that that is independent of the Compton stuff above 
+    
+    # now find index of peak nearest to Fe_Ka energy 
+    #iron_peak_i = np.argmin((peak_keVs_precalib - IRON_Ka)**2) # old code does not work 
+
+    # locate iron Ka channel index (new approach)    
+    delta = 0.5 
+    
+    x_keVs_first_guess = np.linspace(-1, 40, n_channels)
+    FeKa_region = ((x_keVs_first_guess > IRON_Ka - delta) * (x_keVs_first_guess < IRON_Ka + delta)).astype(int)
+    
+    left_peak_i = np.argmax(y_max * FeKa_region) 
+
     # calibrate again now with iron Ka left hand peak 
     
-    left_peak_i = max_peak_indices[iron_peak_i]
+    #left_peak_i = max_peak_indices[iron_peak_i]
     left_keV = IRON_Ka
 
     slope = (right_keV - left_keV) / (right_peak_i - left_peak_i) 
@@ -88,7 +101,13 @@ def calibrate(datastack_file, anode='Rh', prominence=0.03, tube_keV=40, auto_wri
     fig, ax = plt.subplots(ncols=1, nrows=1, figsize=[7, 4])
     ax2 = ax.twinx()
     line1, = ax.plot(x_keVs, y_max, label='max spectrum', color='green')
-    line2, = ax2.plot(x_keVs, y_sum, label='sum spectrum', color='blue')
+    line2, = ax2.plot(x_keVs, y_sum, label='sum spectrum', color='blue', alpha=0.5) 
+    
+    # adjusting upper ylim to fit compton peak height 
+    # while trying to keep lower limit the same... 
+    ax_ylim = ax.get_ylim()[1] 
+    ax.set_ylim([0, ax_ylim])
+    ax2.set_ylim([0, 2 * compton_xy[1]])
 
 
     # annotate iron in max spectrum 
@@ -169,7 +188,7 @@ def detector_angle(keV0, keV1):
     return theta 
 
 
-def find_instrument_peaks(y_sum, prominence=0.1, tube_keV=40):  
+def find_instrument_peaks(y_sum, prominence=0.03, tube_keV=40):  
     '''Locate key instrument peaks: 
     
               1) left hand sensor peak index  

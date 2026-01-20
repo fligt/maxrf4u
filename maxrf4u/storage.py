@@ -118,8 +118,15 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, name=L.MAXRF_CUBE, ver
     # compute and write maxrf data to zipstore 
     with ProgressBar(): 
         
-        # smoothed.to_zarr(zs, component=datapath) 
-        zarr.create_array(store=zs, name=name, data=arr)
+        # smoothed.to_zarr(zs, component=datapath) # broken due to dask.to_zarr bug 
+        #zarr.create_array(store=zs, name=name, data=arr) # forgot to use smoothed instead of arr! 
+        zarr.create_array(store=zs, name=name, data=smoothed) # this should be better 
+
+        # updating dask to version 2025.12.0 
+        # should fix the previous dask.to_zarr bug 
+        # and make computing faster (I hope this works...) 
+        # IT DOES NOT SO REVERTING TO above code 
+        #smoothed.to_zarr(zs, component=name)
        
     zs.close()
         
