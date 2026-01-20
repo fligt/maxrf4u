@@ -60,7 +60,7 @@ L = Layers()
 
 # functions 
 
-def raw_to_datastack(raw_file, rpl_file, output_dir=None, name=L.MAXRF_CUBE, verbose=True, 
+def raw_to_datastack(raw_file, rpl_file, sigma=7, output_dir=None, name=L.MAXRF_CUBE, verbose=True, 
                     flip_horizontal=False, flip_vertical=False, chunks='10 MiB', rechunk=False): 
     '''Convert Bruker Macro XRF (.raw) data file `raw_filename` and (.rpl) shape file `rpl_filename`.  
     
@@ -107,7 +107,7 @@ def raw_to_datastack(raw_file, rpl_file, output_dir=None, name=L.MAXRF_CUBE, ver
         arr = arr.rechunk(balance=True)
     
     # schedule spectral gaussian smoothing computation  
-    smoothed = gaussian_filter(arr, (0, 0, 7)) 
+    smoothed = gaussian_filter(arr, (0, 0, sigma)) 
     
     # create and open an empty zip store 
     zs = ZipStore(datastack_file, mode='w') 
