@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Which elements are hidden in our data cube?">
+
+<title>Solving the peak pattern puzzle – maxrf4u</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./peakmaps.html" rel="next">
+<link href="./peak-pattern-puzzle.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-000f0825b9c55ed21d14970d810c14a9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="Solving the peak pattern puzzle – maxrf4u">
+<meta property="og:description" content="Which elements are hidden in our data cube?">
+<meta property="og:image" content="https://fligt.github.io/maxrf4u/images/55_peak-pattern-puzzle-solver_31a1ea5d32.png">
+<meta property="og:site_name" content="maxrf4u">
+<meta property="og:image:height" content="936">
+<meta property="og:image:width" content="800">
+<meta name="twitter:title" content="Solving the peak pattern puzzle – maxrf4u">
+<meta name="twitter:description" content="Which elements are hidden in our data cube?">
+<meta name="twitter:image" content="https://fligt.github.io/maxrf4u/images/55_peak-pattern-puzzle-solver_31a1ea5d32.png">
+<meta name="twitter:image-height" content="936">
+<meta name="twitter:image-width" content="800">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">maxrf4u</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/fligt/maxrf4u"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./peak-pattern-puzzle-solver.html">Solving the peak pattern puzzle</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome to maxrf4u</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./suzanna.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Meet Susanna</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./storage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Storage</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./calibration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Calibration</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./spatial-verus-spectral.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Spatial versus spectral</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./hotmax.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hotmax spectra</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./peak-pattern-puzzle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">The peak pattern puzzle</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./peak-pattern-puzzle-solver.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Solving the peak pattern puzzle</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./peakmaps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Distribution maps</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./speckles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Speckles</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./interactive-plotting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About interactive visualization using cloud storage</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./xphysics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">XRF physics - the gory details</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Solving the peak pattern puzzle</h1>
+</div>
+
+<div>
+  <div class="description">
+    Which elements are hidden in our data cube?
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p>In the previous section we saw how to explain the presence of specific in the individual hotmax spectra by comparison with the instrument and element peak patterns by hand. Tedious work, but not too difficult. Let’s now try to extract the algorithm for solving the peak pattern puzzle. As an example let’s walk through hotmax spectrum <strong>#4</strong>. In the plot we see thirteen peaks that exceed the noise threshold. We need to explain these peaks away, one by one…</p>
+<div id="df7e6ba5" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> maxrf4u <span class="im">import</span> plot_puzzle, HotmaxAtlas, DataStack</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="7d6ab435" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>fig, ax, ax1 <span class="op">=</span> plot_puzzle(<span class="st">'RP-T-1898-A-3689.datastack'</span>, <span class="dv">4</span>, color_select<span class="op">=</span>[])</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">'Peak pattern atlas'</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+..<img src="./images/55_peak-pattern-puzzle-solver_31a1ea5d32.png">
+</div>
+</div>
+<p>Initially, in hotmax spectrum <strong>#4</strong> there are thirteen detected peaks that we need to explain. These peaks are numbered from highest to lowest. Let’s see how we can explain them away one by one. To read the thirteen peak indexes, we can use the <a href="https://fligt.github.io/maxrf4u/storage.html#datastack.read_list"><code>DataStack.read_list()</code></a> method. Note that in this case we can not use the standard <a href="https://fligt.github.io/maxrf4u/storage.html#datastack.read"><code>DataStack.read()</code></a> method because the data in the datastack is stored as a ragged list.</p>
+<p>Here are the 13 sub peak indexes of hotmax spectrum <strong>#4</strong>.</p>
+<div id="6a7a08c7" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> DataStack(<span class="st">'RP-T-1898-A-3689.datastack'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="fbb027c2" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>subpeak_idxs <span class="op">=</span> ds.read_list(<span class="st">'hotmax_subpeak_idxs_list'</span>)[<span class="dv">4</span>]</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>subpeak_idxs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>[95, 1981, 466, 735, 427, 329, 2108, 800, 2206, 1360, 152, 1522, 933]</code></pre>
+</div>
+</div>
+<p>Let’s convert these channel indexes into energies first.</p>
+<div id="cfae68f0" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>x_keVs <span class="op">=</span> ds.read(<span class="st">'maxrf_energies'</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>peak_nums <span class="op">=</span> np.arange(<span class="bu">len</span>(subpeak_idxs))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>peak_keVs <span class="op">=</span> x_keVs[subpeak_idxs]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="01c0d9c2" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>why_df <span class="op">=</span> pd.DataFrame(data<span class="op">=</span>{<span class="st">'keVs'</span>: peak_keVs})</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>why_df.index.name <span class="op">=</span> <span class="st">'n'</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>why_df[<span class="st">'why'</span>] <span class="op">=</span> <span class="st">'?'</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>why_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">keVs</th>
+<th data-quarto-table-cell-role="th">why</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">n</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>-0.028648</td>
+<td>?</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>18.895640</td>
+<td>?</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>3.693998</td>
+<td>?</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>6.393168</td>
+<td>?</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>3.302669</td>
+<td>?</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>2.319328</td>
+<td>?</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>20.169969</td>
+<td>?</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>7.045383</td>
+<td>?</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>21.153309</td>
+<td>?</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>12.664472</td>
+<td>?</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>0.543295</td>
+<td>?</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>14.289994</td>
+<td>?</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>8.379917</td>
+<td>?</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="ebeb0cf8" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([-0.02864804, 18.89563968,  3.69399816,  6.39316751,  3.30266878,
+        2.31932827, 20.16996871,  7.04538316, 21.15330921, 12.66447177,
+        0.5432949 , 14.28999383,  8.3799167 ])</code></pre>
+</div>
+</div>
+<div id="e1f2b50e" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>explanation <span class="op">=</span> [{<span class="st">'n'</span>: n, <span class="st">'keV'</span>: keV, <span class="st">'src'</span>: src} <span class="cf">for</span> n, keV, src <span class="kw">in</span> <span class="bu">zip</span>(peak_nums, peak_keVs, peak_srcs)]</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>explanation</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'n': 0, 'keV': -0.028648044952708673, 'src': '????'},
+ {'n': 1, 'keV': 18.895639680305266, 'src': '????'},
+ {'n': 2, 'keV': 3.693998161871633, 'src': '????'},
+ {'n': 3, 'keV': 6.393167513989552, 'src': '????'},
+ {'n': 4, 'keV': 3.3026687762485896, 'src': '????'},
+ {'n': 5, 'keV': 2.3193282687855556, 'src': '????'},
+ {'n': 6, 'keV': 20.16996870528287, 'src': '????'},
+ {'n': 7, 'keV': 7.0453831566946254, 'src': '????'},
+ {'n': 8, 'keV': 21.153309212745903, 'src': '????'},
+ {'n': 9, 'keV': 12.664471770769104, 'src': '????'},
+ {'n': 10, 'keV': 0.5432949032655865, 'src': '????'},
+ {'n': 11, 'keV': 14.289993834126363, 'src': '????'},
+ {'n': 12, 'keV': 8.379916702537315, 'src': '????'}]</code></pre>
+</div>
+</div>
+<p>Now, we need to consult the peak pattern atlas with all element starting with the instrument peak pattern.</p>
+<div id="1d377ef9" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> maxrf4u <span class="im">import</span> get_patterns, get_instrument_pattern</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="9b02301c" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>instr_ptrn <span class="op">=</span> get_instrument_pattern(<span class="st">'RP-T-1898-A-3689.datastack'</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>instr_ptrn</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>{'name': 'INSTRUMENT',
+ 'instrument_peaks': array([-0.02864804, 18.82674463, 20.20010005, 20.99840233, 22.72136068])}</code></pre>
+</div>
+</div>
+<p>We now need to check which peaks in the hotmax spectrum match the instrument peaks.</p>
+<div id="9104fdec" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>instr_keVs <span class="op">=</span> instr_ptrn[<span class="st">'instrument_peaks'</span>]</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>instr_keVs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([-0.02864804, 18.82674463, 20.20010005, 20.99840233, 22.72136068])</code></pre>
+</div>
+</div>
+<p>Let’s see which peaks match within a distance of 0.1 keV.</p>
+<div id="83e3f86a" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> match_instrument(why_df, datastack_file, delta_keV<span class="op">=</span><span class="fl">0.1</span>): </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># first generate instrument pattern</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    instr_ptrn <span class="op">=</span> get_instrument_pattern(datastack_file) </span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    instr_keVs <span class="op">=</span> instr_ptrn[<span class="st">'instrument_peaks'</span>] </span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calculate distances and filter &lt; delta_keV</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    distance_matrix <span class="op">=</span> np.sqrt((subpeak_keVs[:, <span class="va">None</span>] <span class="op">-</span> instr_keVs[<span class="va">None</span>, :])<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    is_nearby <span class="op">=</span> distance_matrix <span class="op">&lt;</span> delta_keV</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># matching peak_nums </span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    peak_matches <span class="op">=</span> np.argwhere(is_nearby)[:, <span class="dv">0</span>] </span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># insert cause </span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    why_df.at[peak_matches, <span class="st">'why'</span>] <span class="op">=</span> <span class="st">'INSTR'</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> why_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="b401f582" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>why_df <span class="op">=</span> match_instrument(why_df, <span class="st">'RP-T-1898-A-3689.datastack'</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>why_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">keVs</th>
+<th data-quarto-table-cell-role="th">why</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">n</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>-0.028648</td>
+<td>INSTR</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>18.895640</td>
+<td>INSTR</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>3.693998</td>
+<td>?</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>6.393168</td>
+<td>?</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>3.302669</td>
+<td>?</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>2.319328</td>
+<td>?</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>20.169969</td>
+<td>INSTR</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>7.045383</td>
+<td>?</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>21.153309</td>
+<td>?</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>12.664472</td>
+<td>?</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>0.543295</td>
+<td>?</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>14.289994</td>
+<td>?</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>8.379917</td>
+<td>?</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Next phase is a comparison with the element patterns. In order to match a certain element, at least the alpha peak needs to be present…</p>
+<div id="876b29a5" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'elem': 'N',
+  'name': 'Nitrogen',
+  'peaks_xy': array([[0.3902, 1.    ]]),
+  'alpha_escape_keV': -1.3498049024512255,
+  'color': array([0.6196, 0.8549, 0.898 ])},
+ {'elem': 'O',
+  'name': 'Oxygen',
+  'peaks_xy': array([[0.5253, 1.    ]]),
+  'alpha_escape_keV': -1.2147373686843421,
+  'color': array([0.0902, 0.7451, 0.8118])},
+ {'elem': 'F',
+  'name': 'Fluorine',
+  'peaks_xy': array([[0.6753, 1.    ]]),
+  'alpha_escape_keV': -1.0646623311655827,
+  'color': array([0.8588, 0.8588, 0.5529])},
+ {'elem': 'Ne',
+  'name': 'Neon',
+  'peaks_xy': array([[0.8554, 1.    ]]),
+  'alpha_escape_keV': -0.8845722861430715,
+  'color': array([0.7373, 0.7412, 0.1333])},
+ {'elem': 'Na',
+  'name': 'Sodium',
+  'peaks_xy': array([[1.0355, 1.    ]]),
+  'alpha_escape_keV': -0.7044822411205602,
+  'color': array([0.7804, 0.7804, 0.7804])},
+ {'elem': 'Mg',
+  'name': 'Magnesium',
+  'peaks_xy': array([[1.2606, 1.    ]]),
+  'alpha_escape_keV': -0.47936968484242115,
+  'color': array([0.498, 0.498, 0.498])},
+ {'elem': 'Al',
+  'name': 'Aluminum',
+  'peaks_xy': array([[1.4857, 1.    ]]),
+  'alpha_escape_keV': -0.25425712856428206,
+  'color': array([0.9686, 0.7137, 0.8235])},
+ {'elem': 'Si',
+  'name': 'Silicon',
+  'peaks_xy': array([[1.7409, 1.    ]]),
+  'alpha_escape_keV': 0.0008704352176087671,
+  'color': array([0.8902, 0.4667, 0.7608])},
+ {'elem': 'P',
+  'name': 'Phosphorus',
+  'peaks_xy': array([[2.011, 1.   ]]),
+  'alpha_escape_keV': 0.2710055027513756,
+  'color': array([0.7686, 0.6118, 0.5804])},
+ {'elem': 'S',
+  'name': 'Sulfur',
+  'peaks_xy': array([[2.3112, 1.    ]]),
+  'alpha_escape_keV': 0.5711555777888944,
+  'color': array([1. , 0.9, 0.1])},
+ {'elem': 'Cl',
+  'name': 'Chlorine',
+  'peaks_xy': array([[2.6263, 1.    ]]),
+  'alpha_escape_keV': 0.8863131565782891,
+  'color': array([0.7725, 0.6902, 0.8353])},
+ {'elem': 'K',
+  'name': 'Potassium',
+  'peaks_xy': array([[3.3167, 1.    ],
+         [3.5868, 0.1163]]),
+  'alpha_escape_keV': 1.5766583291645826,
+  'color': array([0.5804, 0.4039, 0.7412])},
+ {'elem': 'Ca',
+  'name': 'Calcium',
+  'peaks_xy': array([[3.6918, 1.    ],
+         [4.007 , 0.1254]]),
+  'alpha_escape_keV': 1.9518459229614809,
+  'color': array([1.    , 0.5961, 0.5882])},
+ {'elem': 'I',
+  'name': 'Iodine',
+  'peaks_xy': array([[3.932 , 1.    ],
+         [4.2471, 0.9089],
+         [5.0725, 0.106 ],
+         [4.8024, 0.0827],
+         [3.4817, 0.0379]]),
+  'alpha_escape_keV': 2.191965982991496,
+  'color': array([0.6978, 0.5209, 0.4799])},
+ {'elem': 'Ba',
+  'name': 'Barium',
+  'peaks_xy': array([[4.4572, 1.    ],
+         [4.8474, 0.8766],
+         [5.1626, 0.1669],
+         [5.8079, 0.1019],
+         [5.5378, 0.0946],
+         [3.947 , 0.0386]]),
+  'alpha_escape_keV': 2.717228614307153,
+  'color': array([0.8566, 0.8005, 0.8976])},
+ {'elem': 'Ti',
+  'name': 'Titanium',
+  'peaks_xy': array([[4.5023, 1.    ],
+         [4.9375, 0.1303],
+         [0.4352, 0.0136]]),
+  'alpha_escape_keV': 2.7622511255627815,
+  'color': array([0.8392, 0.1529, 0.1569])},
+ {'elem': 'V',
+  'name': 'Vanadium',
+  'peaks_xy': array([[4.9525, 1.    ],
+         [5.4327, 0.1316],
+         [0.5103, 0.0173]]),
+  'alpha_escape_keV': 3.2124762381190592,
+  'color': array([0.5961, 0.8745, 0.5412])},
+ {'elem': 'Cr',
+  'name': 'Chromium',
+  'peaks_xy': array([[5.4177, 1.    ],
+         [5.943 , 0.1292],
+         [0.5703, 0.0209]]),
+  'alpha_escape_keV': 3.6777088544272134,
+  'color': array([0.1725, 0.6275, 0.1725])},
+ {'elem': 'Mn',
+  'name': 'Manganese',
+  'peaks_xy': array([[5.8979, 1.    ],
+         [6.4832, 0.1337],
+         [0.6303, 0.0231]]),
+  'alpha_escape_keV': 4.157948974487244,
+  'color': array([1.    , 0.7333, 0.4706])},
+ {'elem': 'Fe',
+  'name': 'Iron',
+  'peaks_xy': array([[6.3932, 1.    ],
+         [7.0535, 0.1351],
+         [0.7054, 0.0282]]),
+  'alpha_escape_keV': 4.653196598299149,
+  'color': array([0.7, 0.5, 0.1])},
+ {'elem': 'Co',
+  'name': 'Cobalt',
+  'peaks_xy': array([[6.9185, 1.    ],
+         [7.6538, 0.1361],
+         [0.7804, 0.0308]]),
+  'alpha_escape_keV': 5.178459229614807,
+  'color': array([0.6824, 0.7804, 0.9098])},
+ {'elem': 'Ni',
+  'name': 'Nickel',
+  'peaks_xy': array([[7.4737, 1.    ],
+         [8.2691, 0.1363],
+         [0.8554, 0.0326]]),
+  'alpha_escape_keV': 5.733736868434217,
+  'color': array([0.1216, 0.4667, 0.7059])},
+ {'elem': 'Cu',
+  'name': 'Copper',
+  'peaks_xy': array([[8.044 , 1.    ],
+         [8.8994, 0.1347],
+         [0.9305, 0.0342]]),
+  'alpha_escape_keV': 6.304022011005502,
+  'color': array([0.1, 0.9, 0.3])},
+ {'elem': 'Zn',
+  'name': 'Zinc',
+  'peaks_xy': array([[8.6293, 1.    ],
+         [9.5748, 0.1385],
+         [1.0205, 0.0355]]),
+  'alpha_escape_keV': 6.889314657328665,
+  'color': array([0.2361, 0.8382, 0.8824])},
+ {'elem': 'Hg',
+  'name': 'Mercury',
+  'peaks_xy': array([[ 9.98  ,  1.    ],
+         [11.8409,  0.7195],
+         [ 2.2211,  0.2312],
+         [13.8369,  0.125 ],
+         [11.5558,  0.0617],
+         [ 8.7194,  0.0541],
+         [14.2121,  0.0365],
+         [ 1.7109,  0.0263],
+         [10.6403,  0.017 ]]),
+  'alpha_escape_keV': 8.239989994997499,
+  'color': array([0.7215, 0.5805, 0.8355])},
+ {'elem': 'As',
+  'name': 'Arsenic',
+  'peaks_xy': array([[10.5353,  1.    ],
+         [11.7209,  0.1511],
+         [ 1.2906,  0.0424]]),
+  'alpha_escape_keV': 8.79526763381691,
+  'color': array([0.9127, 0.9127, 0.7008])},
+ {'elem': 'Pb',
+  'name': 'Lead',
+  'peaks_xy': array([[10.5503,  1.    ],
+         [12.6213,  0.8551],
+         [ 2.3712,  0.2299],
+         [14.7674,  0.1328],
+         [12.3062,  0.0575],
+         [ 9.1846,  0.0564],
+         [15.1726,  0.0373],
+         [ 1.8309,  0.0265],
+         [11.3457,  0.0177]]),
+  'alpha_escape_keV': 8.810275137568784,
+  'color': array([0.4, 0.4, 0.4])},
+ {'elem': 'Br',
+  'name': 'Bromine',
+  'peaks_xy': array([[11.916 ,  1.    ],
+         [13.2966,  0.1603],
+         [ 1.5008,  0.046 ]]),
+  'alpha_escape_keV': 10.175957978989494,
+  'color': array([0.4, 0.3, 0. ])},
+ {'elem': 'Sr',
+  'name': 'Strontium',
+  'peaks_xy': array([[14.1521,  1.    ],
+         [15.8329,  0.175 ],
+         [ 1.8309,  0.0553]]),
+  'alpha_escape_keV': 12.41207603801901,
+  'color': array([0.8618, 0.8618, 0.8618])},
+ {'elem': 'Rh',
+  'name': 'Rhodium',
+  'peaks_xy': array([[20.2001,  1.    ],
+         [22.7214,  0.243 ],
+         [ 2.7014,  0.0815],
+         [23.1716,  0.0408]]),
+  'alpha_escape_keV': 18.460100050025016,
+  'color': array([0.6582, 0.6582, 0.6582])},
+ {'elem': 'Ag',
+  'name': 'Silver',
+  'peaks_xy': array([[22.1511,  1.    ],
+         [24.9275,  0.259 ],
+         [ 2.9865,  0.0898],
+         [25.4527,  0.0452]]),
+  'alpha_escape_keV': 20.411075537768888,
+  'color': array([0.9811, 0.8168, 0.89  ])},
+ {'elem': 'Cd',
+  'name': 'Cadmium',
+  'peaks_xy': array([[23.1716,  1.    ],
+         [23.0065,  0.5582],
+         [26.083 ,  0.2645],
+         [ 3.1366,  0.0922],
+         [26.6383,  0.048 ]]),
+  'alpha_escape_keV': 21.43158579289645,
+  'color': array([0.9326, 0.633 , 0.8487])},
+ {'elem': 'Sn',
+  'name': 'Tin',
+  'peaks_xy': array([[25.2726,  1.    ],
+         [25.0475,  0.5393],
+         [28.4692,  0.2695],
+         [ 3.4367,  0.0961],
+         [ 3.6618,  0.0542],
+         [29.1146,  0.0533]]),
+  'alpha_escape_keV': 23.53263631815908,
+  'color': array([0.8539, 0.7446, 0.7215])}]</code></pre>
+</div>
+</div>
+<div id="e3220546" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> extract_alpha_keVs(elem_ptrns<span class="op">=</span><span class="va">None</span>): </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> elem_ptrns <span class="kw">is</span> <span class="va">None</span>: </span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>        elem_ptrns <span class="op">=</span> get_patterns()</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    alpha_keVs <span class="op">=</span> []</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    elements <span class="op">=</span> []</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    alpha_list <span class="op">=</span> []</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, p <span class="kw">in</span> <span class="bu">enumerate</span>(elem_ptrns):     </span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>        a_keV <span class="op">=</span> p[<span class="st">'peaks_xy'</span>][<span class="dv">0</span>, <span class="dv">0</span>] </span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>        alpha_keVs.append(a_keV)</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>        elem <span class="op">=</span> p[<span class="st">'elem'</span>]</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>        elements.append(elem)</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>        alpha_list.append([elem, a_keV])</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>         </span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> alpha_list</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="66b500a7" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>alpha_list <span class="op">=</span> extract_alpha_keVs()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="a8b5ffa8" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>[a[<span class="dv">1</span>] <span class="cf">for</span> a <span class="kw">in</span> alpha_list]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>[0.3901950975487744,
+ 0.5252626313156579,
+ 0.6753376688344173,
+ 0.8554277138569285,
+ 1.0355177588794398,
+ 1.2606303151575788,
+ 1.485742871435718,
+ 1.7408704352176088,
+ 2.0110055027513756,
+ 2.3111555777888944,
+ 2.626313156578289,
+ 3.3166583291645826,
+ 3.691845922961481,
+ 3.9319659829914957,
+ 4.457228614307153,
+ 4.502251125562782,
+ 4.9524762381190595,
+ 5.417708854427214,
+ 5.897948974487244,
+ 6.393196598299149,
+ 6.9184592296148075,
+ 7.473736868434218,
+ 8.044022011005502,
+ 8.629314657328665,
+ 9.9799899949975,
+ 10.53526763381691,
+ 10.550275137568784,
+ 11.915957978989494,
+ 14.15207603801901,
+ 20.200100050025014,
+ 22.151075537768886,
+ 23.171585792896447,
+ 25.27263631815908]</code></pre>
+</div>
+</div>
+<div id="9c10e0c6" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>d.items()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>dict_items([('N', 0.3901950975487744)])</code></pre>
+</div>
+</div>
+<div id="52abe254" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>alpha[<span class="st">'elem'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>array(['N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'K',
+       'Ca', 'I', 'Ba', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu',
+       'Zn', 'Hg', 'As', 'Pb', 'Br', 'Sr', 'Rh', 'Ag', 'Cd', 'Sn'],
+      dtype='&lt;U8')</code></pre>
+</div>
+</div>
+<p>Let’s color the markers on these matched instrument peaks red…</p>
+<div id="c190ab04" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>y_hot <span class="op">=</span> ds.read(<span class="st">'hotmax_spectra'</span>)[<span class="dv">4</span>] </span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>match_idxs <span class="op">=</span> peak_matches[:, <span class="dv">0</span>]</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>match_x <span class="op">=</span> subpeak_keVs[match_idxs]</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>match_y <span class="op">=</span> y_hot[np.array(subpeak_idxs)[match_idxs]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="eeeccafb" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>subpeak_idxs[]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>[95, 1981, 466, 735, 427, 329, 2108, 800, 2206, 1360, 152, 1522, 933]</code></pre>
+</div>
+</div>
+<div id="0fed7b44" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> maxrf4u <span class="im">import</span> HotmaxAtlas</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="b4dbac0e" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>hma <span class="op">=</span> HotmaxAtlas(<span class="st">'RP-T-1898-A-3689.datastack'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="76a513df" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>ax, ann_list <span class="op">=</span> hma.plot_spectrum(<span class="dv">4</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>ax.scatter(match_x, match_y, facecolor<span class="op">=</span><span class="st">'r'</span>, edgecolor<span class="op">=</span><span class="st">'w'</span>, marker<span class="op">=</span><span class="st">'X'</span>, s<span class="op">=</span><span class="dv">100</span>)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">'Matching instrument peaks'</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+..<img src="./images/55_peak-pattern-puzzle-solver_3e63ab93a0.png">
+</div>
+</div>
+<p>And note down for which peaks we now have an explanation:</p>
+<div id="80517bf6" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>np.set_printoptions(precision<span class="op">=</span><span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="18fdc517" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>[-0.028648044952708673,
+ 18.895639680305266,
+ 3.693998161871633,
+ 6.393167513989552,
+ 3.3026687762485896,
+ 2.3193282687855556,
+ 20.16996870528287,
+ 7.0453831566946254,
+ 21.153309212745903,
+ 12.664471770769104,
+ 0.5432949032655865,
+ 14.289993834126363,
+ 8.379916702537315]</code></pre>
+</div>
+</div>
+<div id="da38627a" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> n <span class="kw">in</span> [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">6</span>]: </span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>    explanation[n][<span class="st">'src'</span>] <span class="op">=</span> <span class="st">'INSTR'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="571f3ab3" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>explanation</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'n': 0, 'keV': -0.028648044952708673, 'src': 'INSTR'},
+ {'n': 1, 'keV': 18.895639680305266, 'src': 'INSTR'},
+ {'n': 2, 'keV': 3.693998161871633, 'src': '????'},
+ {'n': 3, 'keV': 6.393167513989552, 'src': '????'},
+ {'n': 4, 'keV': 3.3026687762485896, 'src': '????'},
+ {'n': 5, 'keV': 2.3193282687855556, 'src': '????'},
+ {'n': 6, 'keV': 20.16996870528287, 'src': 'INSTR'},
+ {'n': 7, 'keV': 7.0453831566946254, 'src': '????'},
+ {'n': 8, 'keV': 21.153309212745903, 'src': '????'},
+ {'n': 9, 'keV': 12.664471770769104, 'src': '????'},
+ {'n': 10, 'keV': 0.5432949032655865, 'src': '????'},
+ {'n': 11, 'keV': 14.289993834126363, 'src': '????'},
+ {'n': 12, 'keV': 8.379916702537315, 'src': '????'}]</code></pre>
+</div>
+</div>
+<p>Now that we matched the instrumental peaks, we need to explain the other remaining peaks following their sorting order (from large to small). This means that next we need to explain peak <strong>(2)</strong>. For this, we need to consult the peak pattern atlas…</p>
+<div id="d39196c8" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>np.argwhere([p[<span class="st">'src'</span>] <span class="op">==</span> <span class="st">'????'</span> <span class="cf">for</span> p <span class="kw">in</span> explanation]).flatten()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([ 2,  3,  4,  5,  7,  8,  9, 10, 11, 12])</code></pre>
+</div>
+</div>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/fligt\.github\.io\/maxrf4u");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./peak-pattern-puzzle.html" class="pagination-link" aria-label="The peak pattern puzzle">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">The peak pattern puzzle</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./peakmaps.html" class="pagination-link" aria-label="Distribution maps">
+        <span class="nav-page-text">Distribution maps</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>2024 Rijkserfgoedlaboratorium Amsterdam | Made with nbdev</p>
+<div class="toc-actions"><ul><li><a href="https://github.com/fligt/maxrf4u/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
