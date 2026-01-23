@@ -17,7 +17,7 @@ import math
 RHODIUM_Ka = 20.210105052526263 # Rh_KL3 
 IRON_Ka = 6.4032016008004 # Fe_KL3 
 
-def calibrate(datastack_file, anode='Rh', prominence=0.03, tube_keV=40, auto_write=False): 
+def calibrate(datastack_file, anode='Rh', prominence=0.03, tube_keV=40, auto_write=False, manual_range=None): 
     '''Automatic two step energy energy calibration. 
     
     In step 1 a preliminary calibration is done assuming that the  
@@ -31,133 +31,147 @@ def calibrate(datastack_file, anode='Rh', prominence=0.03, tube_keV=40, auto_wri
     
     Returns: x_keVs
     '''
-    
-    assert anode == 'Rh', NotImplementedError('Sorry, still need to implement other anode materials!') 
-    
+
+
+    # LOAD SPECTRA 
     ds = maxrf4u.DataStack(datastack_file)
     
     y_max = ds.read(ds.MAXRF_MAXSPECTRUM)
     y_sum = ds.read(ds.MAXRF_SUMSPECTRUM) 
-    
-    # LOCATE INSTRUMENT PEAK INDICES IN SUM SPECTRUM 
-    
-    left_peak_i, compton_peak_i, right_peak_i = find_instrument_peaks(y_sum, tube_keV=tube_keV, prominence=prominence) 
-    
-    # STEP 1: PRELIMINARY SENSOR + ANODE CALIBRATION TO LOCATE IRON Fe_Ka PEAK  
-    
-    left_keV = 0
-    right_keV = RHODIUM_Ka 
-    
-    n_channels = len(y_sum) 
-    x_indices = np.arange(n_channels)
 
-    slope = (right_keV - left_keV) / (right_peak_i - left_peak_i) 
-    offset = left_keV - slope * left_peak_i  
-    keVs_precalib = slope * x_indices + offset 
+    # IN CASE OF TROUBLE, SKIP AUTO CALIBRATION
 
-    # STEP 2: PRECISE IRON Ka + ANODE CALIBRATION 
-    
-    max_peak_indices, shapes_dict = ssg.find_peaks(y_max, prominence=prominence) 
-    peak_keVs_precalib = keVs_precalib[max_peak_indices]
-
-    
-    # needed to improve the algorithm to pick the largest peak 
-    # in the iron region instead of nearest 
-    # for now this is a quick hack that that is independent of the Compton stuff above 
-    
-    # now find index of peak nearest to Fe_Ka energy 
-    #iron_peak_i = np.argmin((peak_keVs_precalib - IRON_Ka)**2) # old code does not work 
-
-    # locate iron Ka channel index (new approach)    
-    delta = 0.5 
-    
-    x_keVs_first_guess = np.linspace(-1, 40, n_channels)
-    FeKa_region = ((x_keVs_first_guess > IRON_Ka - delta) * (x_keVs_first_guess < IRON_Ka + delta)).astype(int)
-    
-    left_peak_i = np.argmax(y_max * FeKa_region) 
-
-    # calibrate again now with iron Ka left hand peak 
-    
-    #left_peak_i = max_peak_indices[iron_peak_i]
-    left_keV = IRON_Ka
-
-    slope = (right_keV - left_keV) / (right_peak_i - left_peak_i) 
-    offset = left_keV - slope * left_peak_i  
-    x_keVs = slope * x_indices + offset 
-    
-    # Calibration peak diagnostics 
-    iron_xy = x_keVs[left_peak_i], y_max[left_peak_i]
-    compton_xy = x_keVs[compton_peak_i], y_sum[compton_peak_i]
-    anode_xy = x_keVs[right_peak_i], y_sum[right_peak_i] 
-    
-    theta = detector_angle(compton_xy[0], anode_xy[0])
-    
-    calib_peaks_x, calib_peaks_y = np.array([iron_xy, compton_xy, anode_xy]).T 
-    
-    # Create calibration plot 
-    plt.ion()
-
-    colors =  cm.tab10([0, 1, 2]) 
-    fig, ax = plt.subplots(ncols=1, nrows=1, figsize=[7, 4])
-    ax2 = ax.twinx()
-    line1, = ax.plot(x_keVs, y_max, label='max spectrum', color='green')
-    line2, = ax2.plot(x_keVs, y_sum, label='sum spectrum', color='blue', alpha=0.5) 
-    
-    # adjusting upper ylim to fit compton peak height 
-    # while trying to keep lower limit the same... 
-    ax_ylim = ax.get_ylim()[1] 
-    ax.set_ylim([0, ax_ylim])
-    ax2.set_ylim([0, 2 * compton_xy[1]])
-
-
-    # annotate iron in max spectrum 
-    ax.axvline(iron_xy[0], linestyle=':', color='r')
-    ax.annotate(f'Iron Ka \n({iron_xy[0]:.3f} keV)', iron_xy, xytext=[20, -20], 
-                textcoords='offset points', ha='left', 
-                arrowprops=dict(arrowstyle="->", facecolor='grey'))
-    ax.scatter(*iron_xy, s=40, facecolor=[1, 0.5, 0.5], edgecolor='green', zorder=10) 
-
-    ax.set_title('Energy Calibration')
-    ax.set_xlabel('Energy [keV]')
-    ax.set_ylabel('Max Spectrum Intensity [counts]')
-
-
-    # annotate compton peak in sum spectrum 
-    ax2.annotate('Compton Peak\n(inelastic scattering)\n' + 
-                r'$\theta$' + f'={int(theta)}' + r'$^{\circ}$', 
-                compton_xy, xytext=[20, 20], 
-                textcoords='offset points', ha='left', 
-                arrowprops=dict(arrowstyle="->", facecolor='grey'))
-    ax2.scatter(*compton_xy, s=40, facecolor='white', edgecolor='blue', zorder=10)       
-
-    # annotate anode peak in sum spectrum 
-    ax2.axvline(anode_xy[0], linestyle=':', color='r')
-    ax2.annotate(f'Anode\nRhodium Ka \n({anode_xy[0]:.2f} keV)', anode_xy, xytext=[20, 20], 
-                textcoords='offset points', ha='left', 
-                arrowprops=dict(arrowstyle="->", facecolor='grey'))
-    ax2.scatter(*anode_xy, s=40, facecolor=[1, 0.5, 0.5], edgecolor=[0, 0, 1], zorder=10)        
-
-    ax2.set_ylabel('Sum Spectrum Intensity [counts]')
-
-    ax.legend(handles=[line1, line2], loc='upper right')
-    
-    # force updating plot 
-    plt.pause(0.2)
-    fig.canvas.draw()
-        
-    # write energies 
-    if auto_write: 
-        write = 'y'     
-    else: 
-        write = input('Write instrument energy calibration to datastack file [y/n]? ')
-
-    if write == 'y': 
-        print(f'\nWriting channel energies (keV) to: {datastack_file}')
+    if manual_range is not None: 
+        start, stop = manual_range 
+        x_keVs = np.linspace(start, stop, num=len(y_max)) 
         maxrf4u.append(x_keVs, ds.MAXRF_ENERGIES, datastack_file) 
+
+    # GO AHEAD WITH AUTO CALIBRATION 
+    else: 
+    
+        assert anode == 'Rh', NotImplementedError('Sorry, still need to implement other anode materials!') 
         
-        print(f'Also writing instrument Compton anode peak energy (keV) to: {datastack_file}')
-        compton_peak_energy = x_keVs[compton_peak_i]
-        maxrf4u.append(np.array([compton_peak_energy]), 'compton_peak_energy', datastack_file)
+    
+        
+        # LOCATE INSTRUMENT PEAK INDICES IN SUM SPECTRUM 
+        
+        left_peak_i, compton_peak_i, right_peak_i = find_instrument_peaks(y_sum, tube_keV=tube_keV, prominence=prominence) 
+        
+        # STEP 1: PRELIMINARY SENSOR + ANODE CALIBRATION TO LOCATE IRON Fe_Ka PEAK  
+        
+        left_keV = 0
+        right_keV = RHODIUM_Ka 
+        
+        n_channels = len(y_sum) 
+        x_indices = np.arange(n_channels)
+    
+        slope = (right_keV - left_keV) / (right_peak_i - left_peak_i) 
+        offset = left_keV - slope * left_peak_i  
+        keVs_precalib = slope * x_indices + offset 
+    
+        # STEP 2: PRECISE IRON Ka + ANODE CALIBRATION 
+        
+        max_peak_indices, shapes_dict = ssg.find_peaks(y_max, prominence=prominence) 
+        peak_keVs_precalib = keVs_precalib[max_peak_indices]
+    
+        
+        # needed to improve the algorithm to pick the largest peak 
+        # in the iron region instead of nearest 
+        # for now this is a quick hack that that is independent of the Compton stuff above 
+        
+        # now find index of peak nearest to Fe_Ka energy 
+        #iron_peak_i = np.argmin((peak_keVs_precalib - IRON_Ka)**2) # old code does not work 
+    
+        # locate iron Ka channel index (new approach)    
+        delta = 0.5 
+        
+        x_keVs_first_guess = np.linspace(-1, 40, n_channels)
+        FeKa_region = ((x_keVs_first_guess > IRON_Ka - delta) * (x_keVs_first_guess < IRON_Ka + delta)).astype(int)
+        
+        left_peak_i = np.argmax(y_max * FeKa_region) 
+    
+        # calibrate again now with iron Ka left hand peak 
+        
+        #left_peak_i = max_peak_indices[iron_peak_i]
+        left_keV = IRON_Ka
+    
+        slope = (right_keV - left_keV) / (right_peak_i - left_peak_i) 
+        offset = left_keV - slope * left_peak_i  
+        x_keVs = slope * x_indices + offset 
+        
+        # Calibration peak diagnostics 
+        iron_xy = x_keVs[left_peak_i], y_max[left_peak_i]
+        compton_xy = x_keVs[compton_peak_i], y_sum[compton_peak_i]
+        anode_xy = x_keVs[right_peak_i], y_sum[right_peak_i] 
+        
+        theta = detector_angle(compton_xy[0], anode_xy[0])
+        
+        calib_peaks_x, calib_peaks_y = np.array([iron_xy, compton_xy, anode_xy]).T 
+        
+        # Create calibration plot 
+        plt.ion()
+    
+        colors =  cm.tab10([0, 1, 2]) 
+        fig, ax = plt.subplots(ncols=1, nrows=1, figsize=[7, 4])
+        ax2 = ax.twinx()
+        line1, = ax.plot(x_keVs, y_max, label='max spectrum', color='green')
+        line2, = ax2.plot(x_keVs, y_sum, label='sum spectrum', color='blue', alpha=0.5) 
+        
+        # adjusting upper ylim to fit compton peak height 
+        # while trying to keep lower limit the same... 
+        ax_ylim = ax.get_ylim()[1] 
+        ax.set_ylim([0, ax_ylim])
+        ax2.set_ylim([0, 2 * compton_xy[1]])
+    
+    
+        # annotate iron in max spectrum 
+        ax.axvline(iron_xy[0], linestyle=':', color='r')
+        ax.annotate(f'Iron Ka \n({iron_xy[0]:.3f} keV)', iron_xy, xytext=[20, -20], 
+                    textcoords='offset points', ha='left', 
+                    arrowprops=dict(arrowstyle="->", facecolor='grey'))
+        ax.scatter(*iron_xy, s=40, facecolor=[1, 0.5, 0.5], edgecolor='green', zorder=10) 
+    
+        ax.set_title('Energy Calibration')
+        ax.set_xlabel('Energy [keV]')
+        ax.set_ylabel('Max Spectrum Intensity [counts]')
+    
+    
+        # annotate compton peak in sum spectrum 
+        ax2.annotate('Compton Peak\n(inelastic scattering)\n' + 
+                    r'$\theta$' + f'={int(theta)}' + r'$^{\circ}$', 
+                    compton_xy, xytext=[20, 20], 
+                    textcoords='offset points', ha='left', 
+                    arrowprops=dict(arrowstyle="->", facecolor='grey'))
+        ax2.scatter(*compton_xy, s=40, facecolor='white', edgecolor='blue', zorder=10)       
+    
+        # annotate anode peak in sum spectrum 
+        ax2.axvline(anode_xy[0], linestyle=':', color='r')
+        ax2.annotate(f'Anode\nRhodium Ka \n({anode_xy[0]:.2f} keV)', anode_xy, xytext=[20, 20], 
+                    textcoords='offset points', ha='left', 
+                    arrowprops=dict(arrowstyle="->", facecolor='grey'))
+        ax2.scatter(*anode_xy, s=40, facecolor=[1, 0.5, 0.5], edgecolor=[0, 0, 1], zorder=10)        
+    
+        ax2.set_ylabel('Sum Spectrum Intensity [counts]')
+    
+        ax.legend(handles=[line1, line2], loc='upper right')
+        
+        # force updating plot 
+        plt.pause(0.2)
+        fig.canvas.draw()
+            
+        # write energies 
+        if auto_write: 
+            write = 'y'     
+        else: 
+            write = input('Write instrument energy calibration to datastack file [y/n]? ')
+    
+        if write == 'y': 
+            print(f'\nWriting channel energies (keV) to: {datastack_file}')
+            maxrf4u.append(x_keVs, ds.MAXRF_ENERGIES, datastack_file) 
+            
+            print(f'Also writing instrument Compton anode peak energy (keV) to: {datastack_file}')
+            compton_peak_energy = x_keVs[compton_peak_i]
+            maxrf4u.append(np.array([compton_peak_energy]), 'compton_peak_energy', datastack_file)
             
     return x_keVs
 
